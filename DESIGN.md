@@ -27,9 +27,9 @@ proportional numerals is guesswork.
 
 | Class | Size | Leading | Tracking |
 | --- | --- | --- | --- |
-| `type-hero` | `clamp(2.75rem, 9vw, 7.5rem)` | 0.90 | −0.035em |
-| `type-section` | `clamp(2rem, 5.2vw, 4rem)` | 0.96 | −0.03em |
-| `type-nav` | `clamp(2.25rem, 7vw, 5rem)` | 1.02 | −0.03em |
+| `type-hero` | `clamp(3rem, 10.5vw, 9.5rem)` | 0.90 | −0.035em |
+| `type-section` | `clamp(2.25rem, 6.8vw, 5.75rem)` | 0.96 | −0.03em |
+| `type-nav` | `clamp(2.5rem, 7.5vw, 5.5rem)` | 1.02 | −0.03em |
 | `type-title` | `clamp(1.125rem, 1.8vw, 1.5rem)` | 1.15 | −0.015em |
 | `type-body` | 0.9375rem, capped at 68ch | 1.65 | — |
 | `type-small` | 0.875rem | 1.5 | — |
@@ -79,7 +79,7 @@ is a state change.
 
 ## Layout
 
-`--space-section` (6rem, 8rem from 768px) and `--space-gutter` (1.5rem,
+`--space-section` (7rem, 10rem from 768px) and `--space-gutter` (1.5rem,
 2.5rem) are the base rhythm values. Three primitives apply them:
 
 | Class | Block padding | Used for |
@@ -130,6 +130,11 @@ this project measures should come only from the modules degraded on purpose.
 Every image comes from one curated set in `app/composables/usePhotography.ts`,
 referencing picsum's fixed catalogue (`/id/<n>/…`) rather than its random
 `/seed/<word>` endpoint — so the same picture comes back on every load.
+
+Photographs appear only where they are the subject — hero, work, gallery,
+capability panel. They never sit behind type: a photograph and a statement
+competing for one rectangle weakens both, and the client strip uses drawn marks
+rather than stock crops standing in for logos.
 
 The direction is atmospheric and wide: landscape, coast, forest, empty
 architecture, muted light, a figure in the frame rather than a face at the

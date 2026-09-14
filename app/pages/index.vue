@@ -22,7 +22,7 @@ watchEffect(() => {
     <CategoryFilter :is-degraded="degradations.filter" />
     <PullQuote />
     <StatsCounter />
-    <LogoWall :is-degraded="degradations.logos" />
+    <ClientLoop :is-degraded="degradations.logos" />
     <FaqAccordion :is-degraded="degradations.faq" />
   </div>
 </template>

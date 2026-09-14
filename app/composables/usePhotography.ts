@@ -38,12 +38,6 @@ export const CAPABILITY_IMAGES: Record<string, number> = {
   'Event': 61,
 }
 
-/** The pull quote sits over this one. */
-export const QUOTE_IMAGE = 44
-
-/** Texture crops. Shown small, desaturated and dim, so subject matters least. */
-export const CLIENT_IMAGES = [19, 41, 72, 78, 83, 11, 37, 71] as const
-
 /** Builds a catalogue URL at an explicit size. */
 export function photo(id: number, width: number, height: number) {
   return `https://picsum.photos/id/${id}/${width}/${height}`

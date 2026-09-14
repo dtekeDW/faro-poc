@@ -38,8 +38,8 @@
   --duration-stage: 900ms;
 
   /* Section rhythm. Sections breathe more than blocks, blocks more than lines. */
-  --space-section: 6rem;
-  --space-section-lg: 8rem;
+  --space-section: 7rem;
+  --space-section-lg: 10rem;
   --space-gutter: 1.5rem;
   --space-gutter-lg: 2.5rem;
 }
@@ -82,7 +82,7 @@ body {
   .type-hero {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2.75rem, 9vw, 7.5rem);
+    font-size: clamp(3rem, 10.5vw, 9.5rem);
     line-height: 0.9;
     letter-spacing: -0.035em;
     text-wrap: balance;
@@ -91,7 +91,7 @@ body {
   .type-section {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2rem, 5.2vw, 4rem);
+    font-size: clamp(2.25rem, 6.8vw, 5.75rem);
     line-height: 0.96;
     letter-spacing: -0.03em;
     text-wrap: balance;
@@ -108,7 +108,7 @@ body {
   .type-nav {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2.25rem, 7vw, 5rem);
+    font-size: clamp(2.5rem, 7.5vw, 5.5rem);
     line-height: 1.02;
     letter-spacing: -0.03em;
   }
