@@ -3,11 +3,17 @@ useHead({ title: 'Secondary text faces — Sequence' })
 
 const filter = ref<'all' | 'Fontshare' | 'Google'>('all')
 
-const faces = computed(() =>
-  filter.value === 'all'
+const { eliminated, isReady, eliminate, restoreAll } = useShortlist('text')
+
+const faces = computed(() => {
+  const bySource = filter.value === 'all'
     ? TEXT_FACES
-    : TEXT_FACES.filter(face => face.source === filter.value),
-)
+    : TEXT_FACES.filter(face => face.source === filter.value)
+
+  return isReady.value
+    ? bySource.filter(face => !eliminated.value.includes(face.id))
+    : bySource
+})
 </script>
 
 <template>
@@ -34,15 +40,44 @@ const faces = computed(() =>
           {{ option === 'all' ? 'All' : option }}
         </button>
       </div>
+
+      <p
+        v-if="isReady && eliminated.length"
+        class="mt-5 flex items-center gap-4 text-xs text-mute"
+      >
+        <span class="type-data">{{ eliminated.length }} dismissed · {{ faces.length }} left</span>
+        <button type="button" class="link-wipe cursor-pointer text-dodger" @click="restoreAll()">
+          Bring them all back
+        </button>
+      </p>
     </header>
 
-    <ol class="mt-14">
+    <TransitionGroup
+      tag="ol"
+      class="mt-14"
+      enter-active-class="transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      enter-from-class="opacity-0"
+      leave-active-class="absolute w-full transition duration-300 ease-[cubic-bezier(0.7,0,0.84,0)]"
+      leave-to-class="opacity-0 -translate-y-2"
+      move-class="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+    >
       <li
         v-for="(face, index) in faces"
         :key="face.id"
-        class="rule px-6 py-14 transition-colors duration-500 hover:bg-ink-raised md:px-10"
+        class="rule group relative px-6 py-14 transition-colors duration-500 hover:bg-ink-raised md:px-10"
       >
-        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <button
+          type="button"
+          :aria-label="`Dismiss ${face.name}`"
+          class="absolute right-4 top-12 grid size-8 cursor-pointer place-items-center rounded-full border border-chalk/15 text-mute opacity-0 transition duration-300 hover:border-dodger hover:bg-dodger hover:text-ink focus-visible:opacity-100 group-hover:opacity-100 md:right-8"
+          @click="eliminate(face.id)"
+        >
+          <svg viewBox="0 0 24 24" class="size-3.5" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" />
+          </svg>
+        </button>
+
+        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 pr-12">
           <span class="type-data text-xs text-dodger">{{ String(index + 1).padStart(2, '0') }}</span>
           <span :class="face.css" class="text-sm font-medium">{{ face.name }}</span>
           <span :class="face.css" class="text-xs uppercase tracking-widest text-mute">{{ face.source }}</span>
@@ -101,6 +136,13 @@ const faces = computed(() =>
           </div>
         </div>
       </li>
-    </ol>
+    </TransitionGroup>
+
+    <p v-if="isReady && !faces.length" class="px-6 pt-16 text-sm text-mute md:px-10">
+      Everything is dismissed.
+      <button type="button" class="link-wipe cursor-pointer text-dodger" @click="restoreAll()">
+        Start over
+      </button>
+    </p>
   </div>
 </template>
