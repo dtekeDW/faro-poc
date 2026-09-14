@@ -18,7 +18,7 @@ watchEffect(() => {
     <HeroShowreel :is-degraded="degradations.hero" />
     <MarqueeStrip />
     <FeaturedWorks />
-    <WorkGallery :is-degraded="degradations.gallery" />
+    <OrbitGallery :is-degraded="degradations.gallery" />
     <StatsCounter />
     <LogoWall :is-degraded="degradations.logos" />
     <CategoryFilter :is-degraded="degradations.filter" />
