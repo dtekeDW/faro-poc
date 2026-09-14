@@ -1,166 +1,139 @@
 <script setup lang="ts">
 const { isDegraded } = defineProps<{ isDegraded: boolean }>()
 
-interface Frame {
-  id: number
-  title: string
-  place: string
-  format: string
-  month: string
+interface MotionViewInstance {
+  canvas: HTMLCanvasElement
+  destroy: () => void
+}
+
+declare global {
+  interface Window {
+    MotionView?: {
+      mount: (target: string | HTMLElement, config: Record<string, unknown>) => MotionViewInstance
+    }
+  }
 }
 
 const FORMATS = ['Brand Film', 'Documentary', 'Commercial', 'Product'] as const
 
-const PLACES = [
-  ['Kyoto', 'October 2026'], ['Reykjavík', 'March 2026'], ['Lisbon', 'June 2025'],
-  ['Oaxaca', 'January 2026'], ['Tallinn', 'August 2025'], ['Busan', 'April 2026'],
-] as const
+/** One reel per format. The caption pair drives the two MotionView text layers. */
+const reels = {
+  'All': { place: 'KYOTO', month: 'OCTOBER 2026', seed: 'kyoto' },
+  'Brand Film': { place: 'REYKJAVÍK', month: 'MARCH 2026', seed: 'reykjavik' },
+  'Documentary': { place: 'LISBON', month: 'JUNE 2025', seed: 'lisbon' },
+  'Commercial': { place: 'OAXACA', month: 'JANUARY 2026', seed: 'oaxaca' },
+  'Product': { place: 'BUSAN', month: 'AUGUST 2025', seed: 'busan' },
+} as const
 
-const frames: Frame[] = Array.from({ length: 18 }, (_, index) => {
-  const [place, month] = PLACES[index % PLACES.length]!
+const activeFormat = ref<keyof typeof reels>('All')
+
+const canvas = ref<HTMLCanvasElement | null>(null)
+let instance: MotionViewInstance | null = null
+
+// Degraded mode feeds 2400px originals into a canvas painted at ~900px, so the
+// browser decodes roughly seven times the pixels it will ever show.
+const edge = computed(() => (isDegraded ? 2400 : 960))
+
+function imagesFor(seed: string) {
+  return Array.from(
+    { length: 5 },
+    (_, index) => `https://picsum.photos/seed/${seed}-${index}/${edge.value}/${Math.round(edge.value * 9 / 16)}`,
+  )
+}
+
+/** Exactly the configuration from the MotionView studio export. */
+function configFor(key: keyof typeof reels) {
+  const reel = reels[key]
+
   return {
-    id: index + 1,
-    title: ['Northbound', 'After School', 'Capsule', 'The Archive', 'Long Coast', 'Signal'][index % 6]!,
-    place,
-    month,
-    format: FORMATS[index % FORMATS.length]!,
-  }
-})
-
-const activeFormat = ref<string | null>(null)
-const visible = computed(() =>
-  activeFormat.value ? frames.filter(f => f.format === activeFormat.value) : frames,
-)
-
-const stage = ref<HTMLElement | null>(null)
-const cards = ref<HTMLElement[]>([])
-
-/** Orbit position in turns. Advanced by rAF, nudged by drag. */
-const offset = ref(0)
-const isDragging = ref(false)
-const isPaused = ref(false)
-const lightbox = ref<Frame | null>(null)
-
-/** Index nearest the front of the orbit — the one the caption describes. */
-const frontIndex = computed(() => {
-  const count = visible.value.length
-  if (!count)
-    return 0
-
-  return ((Math.round(-offset.value * count) % count) + count) % count
-})
-
-const front = computed(() => visible.value[frontIndex.value] ?? null)
-
-function layout() {
-  const count = visible.value.length
-  if (!count)
-    return
-
-  for (let index = 0; index < count; index++) {
-    const node = cards.value[index]
-    if (!node)
-      continue
-
-    const theta = ((index / count) + offset.value) * Math.PI * 2
-    const depth = Math.cos(theta)
-
-    const x = Math.sin(theta) * 46
-    const z = depth * 28
-    // Gentle vertical arc so the ring reads as a tilted orbit, not a carousel.
-    const y = Math.sin(theta * 2) * 4
-    const scale = 0.62 + (depth + 1) * 0.24
-    const near = (depth + 1) / 2
-
-    node.style.zIndex = String(Math.round(near * 100))
-    node.style.opacity = String(0.18 + near * 0.82)
-    node.style.filter = near > 0.86 ? 'none' : `blur(${((1 - near) * 5).toFixed(2)}px)`
-
-    if (isDegraded) {
-      // Positioning through layout properties forces a full reflow of the ring
-      // on every frame. Same visual result, a main thread that never rests.
-      node.style.left = `${50 + x}%`
-      node.style.top = `${50 + y}%`
-      node.style.width = `${scale * 46}%`
-      node.style.marginLeft = `${-scale * 23}%`
-      void node.offsetHeight
-    }
-    else {
-      node.style.transform =
-        `translate3d(calc(-50% + ${x}cqw), calc(-50% + ${y}cqh), ${z}px) scale(${scale.toFixed(3)})`
-    }
+    familyKey: 'orbit',
+    imageCount: 5,
+    aspectId: '16:9',
+    loopSec: 16,
+    params: {
+      big: 0.5,
+      tilt: 0.55,
+      window: 0.65,
+      arc: 0.3,
+      fade: 0.3,
+      life: 0.5,
+      persp: 0.2,
+    },
+    bgId: 'paper',
+    radius: 0.02,
+    focus: 0.4,
+    focusMode: 'vignette',
+    focusReach: 0.6,
+    focusSoft: 2.2,
+    easePts: [0.6, 0, 0.4, 1],
+    images: imagesFor(reel.seed),
+    texts: [
+      {
+        content: reel.place,
+        x: 0.5,
+        y: 0.465,
+        size: 0.135,
+        weight: 400,
+        color: '#ffffff',
+        font: 'display',
+        tracking: 0.06,
+        id: 'tx-place',
+      },
+      {
+        content: reel.month,
+        x: 0.5,
+        y: 0.565,
+        size: 0.0155,
+        weight: 700,
+        color: '#dcd6cc',
+        font: 'sans',
+        tracking: 0.46,
+        id: 'tx-month',
+      },
+    ],
   }
 }
 
-let raf = 0
-let last = 0
+function mount() {
+  if (!canvas.value || !window.MotionView)
+    return
 
-function tick(now: number) {
-  const delta = last ? (now - last) / 1000 : 0
-  last = now
-
-  if (!isPaused.value && !isDragging.value)
-    offset.value += delta / 26
-
-  layout()
-  raf = requestAnimationFrame(tick)
+  instance?.destroy()
+  instance = window.MotionView.mount(canvas.value, configFor(activeFormat.value))
 }
 
 /**
- * Filtering rebuilds the ring. The degraded path runs a quadratic pass first —
- * the shape of the accidental O(n²) work that hides in real filter handlers.
+ * Switching reels tears the canvas down and remounts it. The degraded path runs
+ * a quadratic pass first — the shape of the accidental O(n²) work that hides in
+ * real filter handlers, and it lands squarely in INP because it blocks the
+ * click before the remount can paint.
  */
-function selectFormat(format: string | null) {
+function selectFormat(format: keyof typeof reels) {
   if (isDegraded) {
     let sink = 0
-    for (let i = 0; i < frames.length; i++)
-      for (let j = 0; j < 70_000; j++)
+    for (let i = 0; i < 40; i++)
+      for (let j = 0; j < 90_000; j++)
         sink += (i * j) % 7
     void sink
   }
 
   activeFormat.value = format
-  offset.value = 0
-  cards.value = []
-  nextTick(layout)
-}
-
-let dragX = 0
-
-function onPointerDown(event: PointerEvent) {
-  isDragging.value = true
-  dragX = event.clientX
-  ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
-}
-
-function onPointerMove(event: PointerEvent) {
-  if (!isDragging.value)
-    return
-
-  const width = stage.value?.clientWidth ?? 1
-  offset.value += (event.clientX - dragX) / width * 0.6
-  dragX = event.clientX
-}
-
-function onPointerUp() {
-  isDragging.value = false
-}
-
-function stepTo(index: number) {
-  const count = visible.value.length
-  offset.value = -index / count
+  mount()
 }
 
 onMounted(() => {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  isPaused.value = reduced
-  layout()
-  raf = requestAnimationFrame(tick)
+  if (window.MotionView) {
+    mount()
+    return
+  }
+
+  const script = document.createElement('script')
+  script.src = '/motionview-runtime.js'
+  script.onload = () => mount()
+  document.head.appendChild(script)
 })
 
-onBeforeUnmount(() => cancelAnimationFrame(raf))
-
-watch(visible, () => nextTick(layout))
+onBeforeUnmount(() => instance?.destroy())
 </script>
 
 <template>
@@ -172,130 +145,24 @@ watch(visible, () => nextTick(layout))
 
       <div data-testid="gallery-filter" class="flex flex-wrap gap-2">
         <button
+          v-for="key in (['All', ...FORMATS] as (keyof typeof reels)[])"
+          :key="key"
           type="button"
-          :data-active="activeFormat === null"
+          :data-active="activeFormat === key"
           class="cursor-pointer rounded-full border border-chalk/20 px-4 py-1.5 text-sm transition-colors duration-300 hover:border-chalk/50 data-[active=true]:border-dodger data-[active=true]:bg-dodger data-[active=true]:text-ink"
-          @click="selectFormat(null)"
+          @click="selectFormat(key)"
         >
-          All <span class="tnum opacity-60">{{ frames.length }}</span>
-        </button>
-        <button
-          v-for="format in FORMATS"
-          :key="format"
-          type="button"
-          :data-active="activeFormat === format"
-          class="cursor-pointer rounded-full border border-chalk/20 px-4 py-1.5 text-sm transition-colors duration-300 hover:border-chalk/50 data-[active=true]:border-dodger data-[active=true]:bg-dodger data-[active=true]:text-ink"
-          @click="selectFormat(format)"
-        >
-          {{ format }}
+          {{ key }}
         </button>
       </div>
     </div>
 
-    <!--
-      The ring lives in its own container-query context so the card offsets can
-      be expressed in cqw/cqh and stay proportional at every viewport.
-    -->
-    <div
-      ref="stage"
-      data-testid="orbit"
-      class="relative mt-14 h-[58vh] min-h-[380px] cursor-grab touch-pan-y select-none [container-type:size] [perspective:1400px] active:cursor-grabbing"
-      @pointerdown="onPointerDown"
-      @pointermove="onPointerMove"
-      @pointerup="onPointerUp"
-      @pointercancel="onPointerUp"
-      @mouseenter="isPaused = true"
-      @mouseleave="isPaused = false"
-    >
-      <div
-        v-for="(frame, index) in visible"
-        :key="frame.id"
-        :ref="el => { if (el) cards[index] = el as HTMLElement }"
-        class="absolute left-1/2 top-1/2 w-[46cqw] max-w-[520px] [transform-style:preserve-3d] will-change-transform"
-      >
-        <button
-          type="button"
-          class="block w-full cursor-pointer overflow-hidden bg-ink-raised shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85)]"
-          @click="lightbox = frame"
-        >
-          <span class="sr-only">Open {{ frame.title }}, {{ frame.place }}</span>
-          <img
-            :src="`https://picsum.photos/seed/orbit-${frame.id}/${isDegraded ? 1600 : 960}/${isDegraded ? 900 : 540}`"
-            :width="isDegraded ? undefined : 960"
-            :height="isDegraded ? undefined : 540"
-            loading="lazy"
-            decoding="async"
-            alt=""
-            class="aspect-video w-full object-cover"
-          >
-        </button>
-      </div>
-
-      <!-- Caption rides above the ring, naming whichever frame is at the front. -->
-      <div class="pointer-events-none absolute inset-x-0 bottom-6 z-[110] text-center">
-        <Transition
-          mode="out-in"
-          enter-active-class="transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-          enter-from-class="opacity-0 translate-y-2"
-          leave-active-class="transition duration-200"
-          leave-to-class="opacity-0"
-        >
-          <p v-if="front" :key="front.id">
-            <span class="block text-[9vw] font-extrabold uppercase leading-none tracking-[0.04em] md:text-[3.4vw]">
-              {{ front.place }}
-            </span>
-            <span class="mt-3 block text-[11px] font-bold uppercase tracking-[0.42em] text-mute">
-              {{ front.month }}
-            </span>
-          </p>
-        </Transition>
-      </div>
-    </div>
-
-    <div class="mt-8 flex items-center justify-center gap-2 px-6">
-      <button
-        v-for="(frame, index) in visible"
-        :key="frame.id"
-        type="button"
-        :aria-label="`Show ${frame.place}`"
-        :data-active="index === frontIndex"
-        class="h-1 w-6 cursor-pointer rounded-full bg-chalk/20 transition-colors duration-300 hover:bg-chalk/45 data-[active=true]:bg-dodger"
-        @click="stepTo(index)"
+    <div class="mt-14 flex justify-center px-6 md:px-10">
+      <canvas
+        ref="canvas"
+        data-testid="orbit"
+        class="w-full max-w-[900px]"
       />
     </div>
-
-    <Teleport to="body">
-      <Transition
-        enter-active-class="transition duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
-        enter-from-class="opacity-0"
-        leave-active-class="transition duration-250"
-        leave-to-class="opacity-0"
-      >
-        <div
-          v-if="lightbox"
-          class="fixed inset-0 z-[200] grid place-items-center bg-ink/92 p-4 backdrop-blur-xl"
-          role="dialog"
-          aria-modal="true"
-          @click.self="lightbox = null"
-        >
-          <figure class="w-full max-w-4xl">
-            <img
-              :src="`https://picsum.photos/seed/orbit-${lightbox.id}/1400/787`"
-              width="1400"
-              height="787"
-              alt=""
-              class="max-h-[74vh] w-full object-contain"
-            >
-            <figcaption class="mt-4 flex items-center justify-between gap-6 text-sm">
-              <span>
-                <span class="font-medium">{{ lightbox.title }}</span>
-                <span class="ml-3 font-accent text-lg italic text-mute">{{ lightbox.place }}</span>
-              </span>
-              <span class="tnum text-mute">{{ lightbox.month }}</span>
-            </figcaption>
-          </figure>
-        </div>
-      </Transition>
-    </Teleport>
   </section>
 </template>
