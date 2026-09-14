@@ -42,6 +42,17 @@ because Faro groups signals by page.
 The control row matters as much as the broken ones. Without something green to
 read them against, six red rows say nothing.
 
+Each scenario is a **standalone page** with its own trigger module, built in
+the same design system as the rest of the site. An earlier version rendered the
+full marketing homepage beneath every scenario, which broke the measurement:
+its hero was the largest element on every route, so each page reported a large
+LCP no matter which defect it was built for. One metric, one cause, one page.
+
+Every page shows the measurement live, read from the browser's own performance
+entries — the same source `web-vitals` feeds Faro from. The number on screen is
+the number that reaches Grafana, which is what closes the loop for a viewer:
+press, read, then find the identical value in the dashboard.
+
 ## Two constraints that shaped the build
 
 **Paint metrics are measured once per document load.** LCP, FCP and TTFB are

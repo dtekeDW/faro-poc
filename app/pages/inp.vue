@@ -5,8 +5,7 @@ useHead({ title: `${scenario.label} — Sequence` })
 </script>
 
 <template>
-  <div class="pt-24">
+  <ScenarioShell id="inp">
     <InpLab />
-    <HomeSurface scenario="inp" />
-  </div>
+  </ScenarioShell>
 </template>

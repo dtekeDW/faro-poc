@@ -5,5 +5,7 @@ useHead({ title: `${scenario.label} — Sequence` })
 </script>
 
 <template>
-  <HomeSurface scenario="lcp" />
+  <ScenarioShell id="lcp">
+    <LcpLab />
+  </ScenarioShell>
 </template>

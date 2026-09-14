@@ -79,12 +79,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="section-loose">
-    <h2 class="type-section max-w-[16ch]">
-      <PerCharacterRise text="Press something slow" />
-    </h2>
-
-    <p class="type-body mt-6 text-mute">
+  <section>
+    <p class="type-body text-mute">
       Each button blocks the main thread for a different length of time before
       the click is allowed to paint. The reading underneath is the browser's own
       interaction latency — the same measurement that reaches Grafana, not a

@@ -5,5 +5,7 @@ useHead({ title: `${scenario.label} — Sequence` })
 </script>
 
 <template>
-  <HomeSurface scenario="cls" />
+  <ScenarioShell id="cls">
+    <ClsLab />
+  </ScenarioShell>
 </template>
