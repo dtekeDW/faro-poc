@@ -1,9 +1,6 @@
 <script setup lang="ts">
 const { isOpen, toggle, close } = useMenu()
 
-// Lets ?display=<id> preview a headline candidate across the real site.
-useDisplayOverride()
-
 const links = [
   { label: 'Works', to: '#works', meta: '24 films' },
   { label: 'Gallery', to: '#gallery', meta: '68 stills' },

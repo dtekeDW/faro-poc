@@ -1,43 +1,7 @@
 @import "tailwindcss";
 
 
-/* Headline candidates for the specimen wall at /fonts. */
-.fs-clash { font-family: "Clash Display", ui-sans-serif, sans-serif; }
-.fs-cabinet { font-family: "Cabinet Grotesk", ui-sans-serif, sans-serif; }
-.fs-unbounded { font-family: "Unbounded", ui-sans-serif, sans-serif; }
-.fs-league { font-family: "League Spartan", ui-sans-serif, sans-serif; }
-.fs-supreme { font-family: "Supreme", ui-sans-serif, sans-serif; }
-.fs-general { font-family: "General Sans", ui-sans-serif, sans-serif; }
-.fs-switzer { font-family: "Switzer", ui-sans-serif, sans-serif; }
-.fs-chillax { font-family: "Chillax", ui-sans-serif, sans-serif; }
-.fs-onest { font-family: "Onest", ui-sans-serif, sans-serif; }
-.fs-golos { font-family: "Golos Text", ui-sans-serif, sans-serif; }
-.fs-hanken { font-family: "Hanken Grotesk", ui-sans-serif, sans-serif; }
-.fs-commissioner { font-family: "Commissioner", ui-sans-serif, sans-serif; }
-.fs-redhat { font-family: "Red Hat Display", ui-sans-serif, sans-serif; }
-.fs-figtree { font-family: "Figtree", ui-sans-serif, sans-serif; }
-.fs-archivo { font-family: "Archivo", ui-sans-serif, sans-serif; }
-.fs-darker { font-family: "Darker Grotesque", ui-sans-serif, sans-serif; }
 
-/* Secondary-text candidates for the specimen wall at /text. */
-.ts-switzer { font-family: "Switzer", ui-sans-serif, sans-serif; }
-.ts-general { font-family: "General Sans", ui-sans-serif, sans-serif; }
-.ts-supreme { font-family: "Supreme", ui-sans-serif, sans-serif; }
-.ts-synonym { font-family: "Synonym", ui-sans-serif, sans-serif; }
-.ts-author { font-family: "Author", ui-sans-serif, sans-serif; }
-.ts-ranade { font-family: "Ranade", ui-sans-serif, sans-serif; }
-.ts-public { font-family: "Public Sans", ui-sans-serif, sans-serif; }
-.ts-plex { font-family: "IBM Plex Sans", ui-sans-serif, sans-serif; }
-.ts-commissioner { font-family: "Commissioner", ui-sans-serif, sans-serif; }
-.ts-golos { font-family: "Golos Text", ui-sans-serif, sans-serif; }
-.ts-vietnam { font-family: "Be Vietnam Pro", ui-sans-serif, sans-serif; }
-.ts-karla { font-family: "Karla", ui-sans-serif, sans-serif; }
-.ts-hanken { font-family: "Hanken Grotesk", ui-sans-serif, sans-serif; }
-.ts-figtree { font-family: "Figtree", ui-sans-serif, sans-serif; }
-.ts-onest { font-family: "Onest", ui-sans-serif, sans-serif; }
-.ts-chivo { font-family: "Chivo", ui-sans-serif, sans-serif; }
-.ts-spline { font-family: "Spline Sans", ui-sans-serif, sans-serif; }
-.ts-madefor { font-family: "Wix Madefor Text", ui-sans-serif, sans-serif; }
 
 /* ---------------------------------------------------------------------------
  * Design tokens
@@ -62,7 +26,7 @@
   --color-mute: #8a949e;
 
   --font-display: "Golos Text", ui-sans-serif, system-ui, sans-serif;
-  --font-text: "Golos Text", ui-sans-serif, system-ui, sans-serif;
+  --font-text: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
 
   /* Exponential ease-out: fast commit, long settle. One curve for the system. */
@@ -104,7 +68,7 @@ body {
  * silently ships no @font-face at all.
  */
 .font-display { font-family: "Golos Text", ui-sans-serif, system-ui, sans-serif; }
-.font-text { font-family: "Golos Text", ui-sans-serif, system-ui, sans-serif; }
+.font-text { font-family: "Figtree", ui-sans-serif, system-ui, sans-serif; }
 .font-mono { font-family: "Geist Mono", ui-monospace, SFMono-Regular, monospace; }
 
 /* ---------------------------------------------------------------------------

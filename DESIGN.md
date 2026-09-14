@@ -8,14 +8,17 @@ class names and never restate a value.
 
 | Role | Face | Used for |
 | --- | --- | --- |
-| Display | **Unbounded** | Anything meant to be *looked at* — hero, section heads, nav |
-| Text | **Instrument Sans** | Anything meant to be *read* — body, labels, controls |
+| Display | **Golos Text** | Anything meant to be *looked at* — hero, section heads, nav |
+| Text | **Figtree** | Anything meant to be *read* — body, labels, controls |
 | Data | **Geist Mono** | Anything meant to be *compared* — counts, durations, timecodes |
 
-Unbounded is a wide geometric with large counters. Tracking tightens with size
-but stops at `-0.02em`: closing the counters further trades its character for
-nothing. This is why the earlier `-0.05em` from the grotesque-based scale was
-dropped rather than carried over.
+Golos is broad and grounded rather than geometric, so it takes tight tracking
+well and needs weight 700 to hold a hero — at 600 it goes soft at display size.
+Figtree sits under it with a softer, rounder construction and a high x-height,
+which keeps body copy fast to read without competing with the headline.
+
+The pairing works because the two differ in *construction*, not in width. Two
+faces of the same build would read as an accident rather than a decision.
 
 Numbers use `type-data`, which sets tabular figures. Comparing a column of
 proportional numerals is guesswork.
@@ -24,10 +27,10 @@ proportional numerals is guesswork.
 
 | Class | Size | Leading | Tracking |
 | --- | --- | --- | --- |
-| `type-hero` | `clamp(2.75rem, 9vw, 7.5rem)` | 0.92 | −0.02em |
-| `type-section` | `clamp(2rem, 5.2vw, 4rem)` | 0.98 | −0.02em |
-| `type-nav` | `clamp(2.25rem, 7vw, 5rem)` | 1.05 | −0.02em |
-| `type-title` | `clamp(1.125rem, 1.8vw, 1.5rem)` | 1.15 | −0.01em |
+| `type-hero` | `clamp(2.75rem, 9vw, 7.5rem)` | 0.90 | −0.035em |
+| `type-section` | `clamp(2rem, 5.2vw, 4rem)` | 0.96 | −0.03em |
+| `type-nav` | `clamp(2.25rem, 7vw, 5rem)` | 1.02 | −0.03em |
+| `type-title` | `clamp(1.125rem, 1.8vw, 1.5rem)` | 1.15 | −0.015em |
 | `type-body` | 0.9375rem, capped at 68ch | 1.65 | — |
 | `type-small` | 0.875rem | 1.5 | — |
 | `type-micro` | 0.6875rem, uppercase | 1.4 | +0.36em |
@@ -99,7 +102,10 @@ with a 3px offset on every focusable element.
 
 ## Fonts
 
-Self-hosted through `@nuxt/fonts`, declared explicitly in `nuxt.config.ts`.
+Three families, self-hosted through `@nuxt/fonts` and declared explicitly in
+`nuxt.config.ts`. Display and text roles read `var(--font-display)` and
+`var(--font-text)`; the literal names live on `.font-display` / `.font-text`,
+which is what the scanner reads.
 Tailwind v4 compiles font utilities to `var()` references, which the scanner
 cannot read as font-family declarations, so the literal names in
 `main.css` are what makes the download happen. Removing them silently ships a
