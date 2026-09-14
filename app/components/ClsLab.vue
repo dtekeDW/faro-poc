@@ -1,42 +1,77 @@
 <script setup lang="ts">
-interface Shift {
+interface Severity {
   id: string
   label: string
+  /** Height in pixels the injected block occupies once it arrives. */
+  height: number
   note: string
 }
 
-const shifts: Shift[] = [
-  { id: 'image', label: 'Unsized image', note: 'An image without width and height arrives and pushes everything below it down.' },
-  { id: 'banner', label: 'Late banner', note: 'A notice is inserted above the content after load — the classic consent-bar shift.' },
-  { id: 'font', label: 'Font swap', note: 'A late font with different metrics reflows the paragraph it sits in.' },
+/**
+ * A shift's value is roughly how much of the viewport moved multiplied by how
+ * far it travelled, so taller injected content scores disproportionately worse.
+ * These three straddle the 0.1 and 0.25 thresholds in a single press.
+ */
+const severities: Severity[] = [
+  { id: 'light', label: 'Light', height: 90, note: 'A thin notice bar. Noticeable, usually still inside the good band.' },
+  { id: 'heavy', label: 'Heavy', height: 340, note: 'An image block. Pushes the paragraph most of a screen down.' },
+  { id: 'severe', label: 'Severe', height: 900, note: 'A full hero arriving late. Everything the reader had found is gone from view.' },
 ]
 
-const injected = ref<string[]>([])
-const cls = ref(0)
+interface Block {
+  key: string
+  height: number
+  label: string
+}
+
+const blocks = ref<Block[]>([])
 const pending = ref(0)
+const lastPressed = ref<Severity | null>(null)
 
 /**
  * Shifts within 500ms of a user interaction carry `hadRecentInput` and are
- * excluded from CLS by design — an accordion opening is expected movement and
- * should not be penalised. A button that injects on click therefore provokes
- * nothing at all, which is the trap this lab exists to make visible.
- *
- * The injection is delayed past that window so the shift counts, exactly as an
- * ad slot or a late consent bar would behave in the wild.
+ * excluded by design — an accordion opening is expected movement. Injecting on
+ * click therefore provokes nothing at all, so the block is delayed past the
+ * window, which is also how real offenders behave: an ad slot, a late consent
+ * bar, a font swapping in after the paragraph has been read.
  */
 const INPUT_EXCLUSION_MS = 900
 
-/**
- * Layout shift accumulates across the life of the document, so unlike LCP it
- * can be provoked repeatedly without reloading. The score only ever climbs,
- * which is worth seeing: one bad component poisons the whole visit.
- */
+/** Worst five-second burst — this is the reported metric. */
+const cls = ref(0)
+/** Everything that ever moved. Shown alongside to make the difference visible. */
+const total = ref(0)
+
+let windowValue = 0
+let windowFirst = 0
+let windowLast = 0
+
 onMounted(() => {
   const observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
       const shift = entry as PerformanceEntry & { value: number, hadRecentInput: boolean }
-      if (!shift.hadRecentInput)
-        cls.value += shift.value
+      if (shift.hadRecentInput)
+        continue
+
+      total.value += shift.value
+
+      /*
+       * The session-window rule from the web-vitals library: shifts join the
+       * current burst while they stay within 1s of the previous one and 5s of
+       * the first. CLS is the largest burst, never the sum — which is why a
+       * page can shift all day and still score well if it never does it all at
+       * once, and why one late hero scores worse than twenty small nudges.
+       */
+      if (windowValue && shift.startTime - windowLast < 1000 && shift.startTime - windowFirst < 5000) {
+        windowValue += shift.value
+      }
+      else {
+        windowValue = shift.value
+        windowFirst = shift.startTime
+      }
+
+      windowLast = shift.startTime
+      cls.value = Math.max(cls.value, windowValue)
     }
   })
 
@@ -44,47 +79,53 @@ onMounted(() => {
   onBeforeUnmount(() => observer.disconnect())
 })
 
-function provoke(shift: Shift) {
+const timers: ReturnType<typeof setTimeout>[] = []
+
+function provoke(severity: Severity) {
+  lastPressed.value = severity
   pending.value++
 
-  setTimeout(() => {
-    injected.value = [...injected.value, `${shift.id}-${Date.now()}`]
+  timers.push(setTimeout(() => {
+    blocks.value = [...blocks.value, {
+      key: `${severity.id}-${Date.now()}`,
+      height: severity.height,
+      label: severity.label,
+    }]
     pending.value--
-  }, INPUT_EXCLUSION_MS)
+  }, INPUT_EXCLUSION_MS))
 }
 
 function reset() {
-  injected.value = []
+  blocks.value = []
+  cls.value = 0
+  total.value = 0
+  windowValue = 0
 }
 
-const timers: number[] = []
 onBeforeUnmount(() => timers.forEach(clearTimeout))
 </script>
 
 <template>
   <section>
-    <div class="flex flex-wrap gap-3">
+    <div data-testid="cls-triggers" class="flex flex-wrap gap-3">
       <button
-        v-for="shift in shifts"
-        :key="shift.id"
+        v-for="severity in severities"
+        :key="severity.id"
         type="button"
+        :data-active="lastPressed?.id === severity.id"
         class="pill"
-        @click="provoke(shift)"
+        @click="provoke(severity)"
       >
-        {{ shift.label }}
+        {{ severity.label }}
+        <span class="type-data ml-2 opacity-60">{{ severity.height }}px</span>
       </button>
       <button type="button" class="pill" @click="reset()">
         Clear
       </button>
     </div>
 
-    <p class="type-body mt-6 text-sm text-mute">
-      Each press inserts content above the paragraph below —
-      <span class="text-chalk">after a short delay, on purpose</span>. Layout
-      shifts within half a second of a click carry the browser's
-      <span class="type-data">hadRecentInput</span> flag and are excluded from
-      the score, because movement you asked for is not movement that hurt you.
-      Injecting immediately would provoke nothing at all.
+    <p v-if="lastPressed" class="type-body mt-6 text-sm text-mute">
+      {{ lastPressed.note }}
     </p>
 
     <p v-if="pending" class="type-data mt-4 text-sm text-dodger">
@@ -92,29 +133,55 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
     </p>
 
     <div class="mt-12 grid gap-10 md:grid-cols-[1.6fr_1fr] md:items-start">
-      <div data-testid="cls-stage" class="min-h-[22rem] border border-chalk/12 p-6">
-        <!-- Deliberately unsized: reserving no space is the entire defect. -->
-        <img
-          v-for="key in injected"
-          :key="key"
-          :src="photo(WORK_IMAGES[injected.indexOf(key) % WORK_IMAGES.length]!, 900, 300)"
-          alt=""
-          class="photo mb-4 w-full"
+      <div data-testid="cls-stage" class="border border-chalk/12 p-6">
+        <!-- Unsized on purpose: reserving no space is the entire defect. -->
+        <div
+          v-for="block in blocks"
+          :key="block.key"
+          class="mb-4 grid place-items-center bg-ink-raised text-xs text-mute"
+          :style="{ height: `${block.height}px` }"
         >
+          {{ block.label }} block
+        </div>
 
         <p class="type-body text-mute">
           This paragraph has not changed. Everything that moves it was inserted
-          above it after the page had already settled, which is precisely what
-          Cumulative Layout Shift measures — content the reader had already
+          above it after the page had settled — which is precisely what
+          Cumulative Layout Shift measures: content the reader had already
           located, moving out from under them.
         </p>
       </div>
 
-      <MetricReadout :value="cls" unit="" :good="0.1" :poor="0.25" :digits="3">
-        <template #label>
-          Cumulative Layout Shift
-        </template>
-      </MetricReadout>
+      <div class="space-y-8">
+        <MetricReadout :value="cls" unit="" :good="0.1" :poor="0.25" :digits="3">
+          <template #label>
+            Cumulative Layout Shift
+          </template>
+        </MetricReadout>
+
+        <div class="rule border-t pt-6">
+          <p class="text-xs text-mute">
+            Sum of every shift
+          </p>
+          <p class="type-data mt-2 text-3xl text-mute">
+            {{ total.toFixed(3) }}
+          </p>
+          <p class="type-body mt-4 text-xs text-mute">
+            The reported score is the worst five-second burst, not this sum.
+            Shifts join a burst while they land within a second of the previous
+            one. Twenty small nudges spread over a minute score far better than
+            one late hero — which is why pressing
+            <span class="text-chalk">Severe</span> once beats pressing
+            <span class="text-chalk">Light</span> twenty times.
+          </p>
+        </div>
+      </div>
     </div>
+
+    <p class="type-body mt-10 text-sm text-mute">
+      The score never falls back, and it keeps accumulating for as long as the
+      page is open — there is no window after load in which shifts stop
+      counting. It is reported when the page is hidden or left.
+    </p>
   </section>
 </template>

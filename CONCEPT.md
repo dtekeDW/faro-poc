@@ -105,6 +105,23 @@ now delayed past that window, which is also how the real offenders behave: an
 ad slot, a late consent bar, a web font swapping in after the paragraph has
 been read.
 
+**CLS is not a sum.** It is the largest five-second burst of shifts — entries
+join the current burst while they fall within one second of the previous one
+and five seconds of the first, and the reported value is the worst burst ever
+recorded. The first version of the lab displayed a running total instead, which
+both overstated the score and made it feel unresponsive: separate presses land
+in separate bursts, so only the largest counted and pressing more changed
+nothing.
+
+The lab now shows both numbers side by side, because the gap between them is
+itself the lesson: twenty small nudges spread over a minute score far better
+than one late hero.
+
+**There is no deadline.** CLS accumulates for the entire life of the page and
+is reported when it is hidden or left. A shift an hour after load still counts,
+which is why long-lived pages and infinite scrolls are where it usually goes
+wrong.
+
 ## Where the numbers come from
 
 - **`/lab`** — a live run in front of an audience. Honest caveat: values
