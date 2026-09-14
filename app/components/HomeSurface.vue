@@ -20,25 +20,7 @@ const degradations = computed<Degradations>(() => ({
   ...active.value.degradations,
 }))
 
-const { $faro } = useNuxtApp()
-
-/**
- * Names the Faro view after the scenario rather than the raw path, so the
- * dashboard rows carry the label a reader recognises instead of a URL.
- */
-onMounted(() => {
-  watchEffect(() => {
-    $faro?.api?.setView({ name: active.value.id })
-    $faro?.api?.setSession({
-      ...$faro?.api?.getSession?.(),
-      attributes: {
-        ...$faro?.api?.getSession?.()?.attributes,
-        scenario: active.value.id,
-        metric: active.value.metric,
-      },
-    })
-  })
-})
+useFaroPage(() => active.value.id)
 </script>
 
 <template>

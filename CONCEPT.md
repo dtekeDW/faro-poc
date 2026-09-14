@@ -83,6 +83,24 @@ Both are set explicitly in `ScenarioShell` rather than left to the SDK's
 `trackNavigation` flag, because the page a signal is filed under is the whole
 point of the demo and should not depend on an experimental option.
 
+**Telling two runs of the same route apart.** Faro's `page.id` is what the
+Page Performance table shows in its first column; unset, it falls back to the
+path, so `/cls?test=1` and `/cls?test=2` were indistinguishable. It is now set
+explicitly, and a short list of deliberate labelling parameters — `test`, `run`,
+`v`, `delay` — becomes part of it:
+
+| URL | Page ID | Page attributes |
+| --- | --- | --- |
+| `/cls` | `/cls` | `scenario=cls`, `metric=CLS` |
+| `/cls?test=2` | `/cls?test=2` | … plus `param_test=2` |
+| `/ttfb?delay=900` | `/ttfb?delay=900` | … plus `param_delay=900` |
+
+Only that list joins the id. Folding *every* query parameter into it would be
+wrong outside a demo: page id is a grouping key, and a single unbounded
+parameter — a search term, a tracking token, a session id — turns a readable
+table into thousands of one-visit rows. Every other parameter is still carried,
+as a `param_*` attribute, so it stays filterable without becoming identity.
+
 **The exception that causes confusion.** LCP, FCP and TTFB are recorded once
 per document load and are therefore filed under the URL the browser _entered_
 on. Landing on `/` and navigating to `/inp` produces an INP filed under `/inp`
@@ -120,7 +138,7 @@ than one late hero.
 Two further corrections followed from testing it. Blocks injected inside a
 panel stopped raising the score after the first press, because the content they
 displaced had already scrolled out of view — and a shift is scored by how much
-of the *viewport* moved times how far it travelled. They are now injected at the
+of the _viewport_ moved times how far it travelled. They are now injected at the
 very top of the page, so they displace everything on screen, exactly as a late
 consent bar does.
 

@@ -15,32 +15,7 @@ const others = computed(() =>
   SCENARIOS.filter(entry => entry.id !== id && entry.id !== 'healthy'),
 )
 
-const { $faro } = useNuxtApp()
-
-/**
- * Tags the signals with the scenario twice over, because the two dimensions
- * answer different questions in the dashboard: the view name groups the paint
- * metrics per page, while the session attributes survive a navigation and make
- * a whole visit filterable. Existing attributes are spread back in — the SDK
- * keeps its own `isSampled` there and replacing the object drops it.
- */
-onMounted(() => {
-  watchEffect(() => {
-    // Set explicitly rather than relying on trackNavigation alone: the page a
-    // signal is filed under is the whole point of the demo, and it must not
-    // depend on an experimental flag continuing to behave.
-    $faro?.api?.setPage({ url: window.location.href })
-    $faro?.api?.setView({ name: scenario.value.id })
-    $faro?.api?.setSession({
-      ...$faro?.api?.getSession?.(),
-      attributes: {
-        ...$faro?.api?.getSession?.()?.attributes,
-        scenario: scenario.value.id,
-        metric: scenario.value.metric,
-      },
-    })
-  })
-})
+useFaroPage(() => id)
 </script>
 
 <template>
