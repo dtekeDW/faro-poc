@@ -5,5 +5,8 @@ useHead({ title: `${scenario.label} — Sequence` })
 </script>
 
 <template>
-  <HomeSurface scenario="inp" />
+  <div class="pt-24">
+    <InpLab />
+    <HomeSurface scenario="inp" />
+  </div>
 </template>

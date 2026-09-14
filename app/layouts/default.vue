@@ -1,13 +1,19 @@
 <script setup lang="ts">
 const { isOpen, toggle, close } = useMenu()
 
-const links = [
-  { label: 'Works', to: '#works', meta: '24 films' },
-  { label: 'Gallery', to: '#gallery', meta: '68 stills' },
-  { label: 'Playground', to: '#playground', meta: '8 formats' },
-  { label: 'Questions', to: '#questions', meta: null },
-  { label: 'Contact', to: '#contact', meta: null },
-]
+/**
+ * The menu is the scenario navigator. Marketing anchors were the wrong content
+ * for it: this is a demonstration surface, and the thing a viewer needs to move
+ * between is the defects, with the metric each one ruins named right there.
+ */
+const links = computed(() => [
+  { label: 'Lab', to: '/lab', meta: 'run all' },
+  ...SCENARIOS.map(scenario => ({
+    label: scenario.label,
+    to: scenario.id === 'healthy' ? '/' : `/${scenario.id}`,
+    meta: scenario.metric === 'none' ? 'control' : scenario.metric,
+  })),
+])
 
 function onKey(event: KeyboardEvent) {
   if (event.key === 'Escape')
@@ -69,8 +75,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     >
       <ul class="border-t border-ink/15">
         <li v-for="(link, index) in links" :key="link.label">
-          <a
-            :href="link.to"
+          <NuxtLink
+            :to="link.to"
             class="group flex items-baseline justify-between gap-6 border-b border-ink/15 py-4 transition-opacity duration-300 hover:opacity-55 md:py-5"
             :style="{ transitionDelay: `${index * 40}ms` }"
             @click="close()"
@@ -78,10 +84,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             <span class="type-nav">
               {{ link.label }}
             </span>
-            <span v-if="link.meta" class="type-data shrink-0 type-data text-sm md:text-base">
+            <span v-if="link.meta" class="type-data shrink-0 text-sm md:text-base">
               {{ link.meta }}
             </span>
-          </a>
+          </NuxtLink>
         </li>
       </ul>
 

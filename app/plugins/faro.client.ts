@@ -14,6 +14,12 @@ import { TracingInstrumentation } from '@grafana/faro-web-tracing'
  * every entry is browser noise rather than an application fault, and leaving
  * them in drowns the error panel on day one.
  */
+declare global {
+  interface Window {
+    __faro?: Faro
+  }
+}
+
 export default defineNuxtPlugin({
   name: 'faro',
   // Run before other plugins so errors thrown during their setup are captured.
@@ -25,6 +31,16 @@ export default defineNuxtPlugin({
     if (!config.url) {
       console.warn('[faro] NUXT_PUBLIC_FARO_URL is not set — telemetry disabled.')
       return
+    }
+
+    /**
+     * Guarded because HMR re-runs plugins: a second initializeFaro on the same
+     * document leaves the first instance's transport without its logger, which
+     * surfaces as "Cannot read properties of undefined (reading
+     * 'internalLogger')" on every batch it then tries to send.
+     */
+    if (window.__faro) {
+      return { provide: { faro: window.__faro } }
     }
 
     const faro: Faro = initializeFaro({
@@ -63,6 +79,8 @@ export default defineNuxtPlugin({
     router.afterEach((to) => {
       faro.api.setView({ name: to.name?.toString() ?? to.path })
     })
+
+    window.__faro = faro
 
     // Returned rather than passed to nuxtApp.provide(): only this form carries
     // the type through to `useNuxtApp().$faro` at the call sites.
