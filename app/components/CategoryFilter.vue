@@ -40,7 +40,7 @@ function select(capability: Capability) {
 <template>
   <section id="playground" class="section-loose">
     <h2 class="type-section max-w-[12ch]">
-      Our playground
+      <PerCharacterRise text="Our playground" trigger-on-view />
     </h2>
 
     <div data-testid="category-filter" class="mt-10 flex flex-wrap gap-2">

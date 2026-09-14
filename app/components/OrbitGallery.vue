@@ -143,7 +143,7 @@ onBeforeUnmount(() => instance?.destroy())
   <section id="gallery" class="py-24 md:py-32">
     <div class="flex flex-wrap items-end justify-between gap-8 px-6 md:px-10">
       <h2 class="max-w-[12ch] type-section">
-        Stills from the cutting room
+        <PerCharacterRise text="Stills from the cutting room" trigger-on-view />
       </h2>
 
       <div data-testid="gallery-filter" class="flex flex-wrap gap-2">

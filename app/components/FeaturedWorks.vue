@@ -10,7 +10,7 @@ const projects = [
 <template>
   <section id="works" class="section-loose">
     <h2 class="max-w-[14ch] type-section">
-      A few projects we're proud of
+      <PerCharacterRise text="A few projects we're proud of" trigger-on-view />
     </h2>
 
     <!--

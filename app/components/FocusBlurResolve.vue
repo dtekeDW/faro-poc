@@ -12,6 +12,7 @@
 const {
   text,
   delay = 0,
+  duration = 760,
   triggerOnView = false,
 } = defineProps<{
   // The line to animate. Kept as a prop rather than a slot so it can also be
@@ -20,6 +21,13 @@ const {
 
   // Delay before the animation starts, in milliseconds.
   delay?: number
+
+  /**
+   * Duration in milliseconds. The original ships 760ms, which reads well at
+   * body and section sizes; a hero set at 9.5rem resolves across so much more
+   * area that the same duration feels hurried, so large lines pass a longer one.
+   */
+  duration?: number
 
   // Animate only once the text scrolls into view.
   triggerOnView?: boolean
@@ -52,7 +60,7 @@ onMounted(() => {
     <span
       class="focus-blur-resolve"
       :class="{ 'is-playing': hasEntered }"
-      :style="{ animationDelay: `${delay}ms` }"
+      :style="{ animationDelay: `${delay}ms`, animationDuration: `${duration}ms` }"
       aria-hidden="true"
     >{{ text }}</span>
   </span>
@@ -64,7 +72,7 @@ onMounted(() => {
 }
 
 .focus-blur-resolve.is-playing {
-  animation: focus-blur-resolve 0.76s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: focus-blur-resolve cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes focus-blur-resolve {

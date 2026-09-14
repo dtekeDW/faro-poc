@@ -71,12 +71,32 @@ long settle. Its mirror `--ease-in-expo` is used only for exits.
 | `--duration-settle` | 600ms | Ground inversion, underline wipes |
 | `--duration-stage` | 900ms | The menu panel reveal |
 
-Headlines enter with `FocusBlurResolve` — a port of smoothui's
-`focus-blur-resolve`, carried over value for value: 0.76s on
-`cubic-bezier(0.22, 1, 0.36, 1)`, from `blur(14px)`, `opacity 0`,
-`translateY(14px)` and `scale(1.01)` to resolved. It is deliberately used on
-two lines only, the hero and the pull quote. The same entrance on every heading
-stops being a moment and becomes a tic.
+Two text entrances, both ports of smoothui components with their values
+carried over unchanged:
+
+- **`FocusBlurResolve`** — `blur(14px)`, `opacity 0`, `translateY(14px)`,
+  `scale(1.01)` resolving on `cubic-bezier(0.22, 1, 0.36, 1)`. The original
+  ships 760ms; the hero passes **1450ms** because a line set at 9.5rem resolves
+  across far more area and the stock duration reads hurried at that size. Used
+  on two lines only: the hero and the pull quote.
+- **`PerCharacterRise`** — letters from `opacity 0` and `y 32` on
+  `cubic-bezier(0.2, 0.8, 0.2, 1)`, 0.7s, 24ms stagger. Its own documentation
+  says *best on 40px+ headlines*, so it carries the section headings and one
+  short label, never body copy. Characters are grouped per word so a line break
+  cannot fall inside a word — the original allows that, and the headings here
+  run to three lines.
+
+### The hero sequence
+
+One choreographed entrance, not four independent ones. Each delay begins where
+the previous move has visibly settled:
+
+| At | What |
+| --- | --- |
+| 140ms | Headline resolves from blur, over 1450ms |
+| 1150ms | Rule draws itself left to right, over 1100ms |
+| 1650ms | Supporting row drifts up, over 900ms |
+| 1750ms | “Play showreel” rises per character |
 
 The menu is the other authored moment: the panel clips down while the ground
 inverts underneath it, as one gesture rather than two effects. Everything else

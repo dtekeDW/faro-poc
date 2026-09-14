@@ -48,7 +48,7 @@ function onToggle() {
        left column makes that read as a footnote rather than a conclusion. -->
   <section id="questions" class="rule section-loose">
     <h2 class="type-section mx-auto max-w-[16ch] text-center">
-      The questions before the cameras roll
+      <PerCharacterRise text="The questions before the cameras roll" trigger-on-view />
     </h2>
 
     <AccordionRoot v-model="open" type="multiple" data-testid="faq" class="mx-auto mt-16 w-full max-w-5xl">
