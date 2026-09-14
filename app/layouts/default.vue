@@ -6,12 +6,19 @@ const { isOpen, toggle, close } = useMenu()
  * for it: this is a demonstration surface, and the thing a viewer needs to move
  * between is the defects, with the metric each one ruins named right there.
  */
+/**
+ * The control is deliberately absent: it is the homepage, already reachable
+ * through the wordmark, and a sixth row pushes the list past the header. Five
+ * entries is what this type size affords.
+ */
 const links = computed(() =>
-  SCENARIOS.map(scenario => ({
-    label: scenario.menuLabel,
-    to: scenario.id === 'healthy' ? '/' : `/${scenario.id}`,
-    meta: scenario.metric === 'none' ? 'control' : scenario.metric,
-  })),
+  SCENARIOS
+    .filter(scenario => scenario.id !== 'healthy')
+    .map(scenario => ({
+      label: scenario.menuLabel,
+      to: `/${scenario.id}`,
+      meta: scenario.metric,
+    })),
 )
 
 function onKey(event: KeyboardEvent) {
