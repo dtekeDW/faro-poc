@@ -47,27 +47,23 @@ body {
  * nothing and silently ships no @font-face. These classes are used by the
  * specimen page, so they are not dead weight.
  */
-.fs-bodoni { font-family: "Bodoni Moda", ui-serif, Georgia, serif; }
-.fs-cormorant { font-family: "Cormorant Garamond", ui-serif, Georgia, serif; }
-.fs-instrument-serif { font-family: "Instrument Serif", ui-serif, Georgia, serif; }
-.fs-dm-serif { font-family: "DM Serif Display", ui-serif, Georgia, serif; }
-.fs-frank { font-family: "Frank Ruhl Libre", ui-serif, Georgia, serif; }
-.fs-garamond { font-family: "EB Garamond", ui-serif, Georgia, serif; }
-.fs-young { font-family: "Young Serif", ui-serif, Georgia, serif; }
-.fs-newsreader { font-family: "Newsreader", ui-serif, Georgia, serif; }
-.fs-spectral { font-family: "Spectral", ui-serif, Georgia, serif; }
-.fs-literata { font-family: "Literata", ui-serif, Georgia, serif; }
-.fs-petrona { font-family: "Petrona", ui-serif, Georgia, serif; }
-.fs-source { font-family: "Source Serif 4", ui-serif, Georgia, serif; }
-.fs-syne { font-family: "Syne", ui-sans, sans-serif; }
-.fs-jost { font-family: "Jost", ui-sans, sans-serif; }
-.fs-outfit { font-family: "Outfit", ui-sans, sans-serif; }
-.fs-sora { font-family: "Sora", ui-sans, sans-serif; }
-.fs-gabarito { font-family: "Gabarito", ui-sans, sans-serif; }
-.fs-familjen { font-family: "Familjen Grotesk", ui-sans, sans-serif; }
+.fs-clash { font-family: "Clash Display", ui-sans-serif, sans-serif; }
+.fs-cabinet { font-family: "Cabinet Grotesk", ui-sans-serif, sans-serif; }
+.fs-unbounded { font-family: "Unbounded", ui-sans-serif, sans-serif; }
+.fs-league { font-family: "League Spartan", ui-sans-serif, sans-serif; }
+.fs-supreme { font-family: "Supreme", ui-sans-serif, sans-serif; }
+.fs-general { font-family: "General Sans", ui-sans-serif, sans-serif; }
+.fs-switzer { font-family: "Switzer", ui-sans-serif, sans-serif; }
+.fs-chillax { font-family: "Chillax", ui-sans-serif, sans-serif; }
+.fs-onest { font-family: "Onest", ui-sans-serif, sans-serif; }
+.fs-golos { font-family: "Golos Text", ui-sans-serif, sans-serif; }
+.fs-hanken { font-family: "Hanken Grotesk", ui-sans-serif, sans-serif; }
+.fs-commissioner { font-family: "Commissioner", ui-sans-serif, sans-serif; }
+.fs-redhat { font-family: "Red Hat Display", ui-sans-serif, sans-serif; }
+.fs-figtree { font-family: "Figtree", ui-sans-serif, sans-serif; }
+.fs-archivo { font-family: "Archivo", ui-sans-serif, sans-serif; }
+.fs-darker { font-family: "Darker Grotesque", ui-sans-serif, sans-serif; }
 .fs-epilogue { font-family: "Epilogue", ui-sans-serif, sans-serif; }
-.fs-newsreader { font-family: "Newsreader", ui-serif, Georgia, serif; }
-.fs-literata { font-family: "Literata", ui-serif, Georgia, serif; }
 .fs-instrument { font-family: "Instrument Sans", ui-sans-serif, sans-serif; }
 .fs-geist { font-family: "Geist Mono", ui-monospace, monospace; }
 

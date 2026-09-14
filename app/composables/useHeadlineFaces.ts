@@ -1,36 +1,35 @@
 /**
- * Headline candidates for the specimen wall.
+ * Sans headline candidates for the specimen wall.
  *
- * Ordered from highest contrast to lowest so scanning the page moves through a
- * gradient of feeling rather than jumping between unrelated voices.
+ * Ordered by width and weight of voice: expressive display cuts first, then
+ * neutral workhorses, so scrolling moves through a gradient of loudness rather
+ * than jumping between unrelated voices.
  */
 export interface HeadlineFace {
   id: string
   name: string
   css: string
-  kind: 'Serif' | 'Sans'
+  source: 'Fontshare' | 'Google'
   weight: number
   /** What this face makes the sentence feel like. */
   feel: string
 }
 
 export const HEADLINE_FACES: HeadlineFace[] = [
-  { id: 'bodoni', name: 'Bodoni Moda', css: 'fs-bodoni', kind: 'Serif', weight: 700, feel: 'Fashion house. Dramatic thick-thin, high drama.' },
-  { id: 'cormorant', name: 'Cormorant Garamond', css: 'fs-cormorant', kind: 'Serif', weight: 600, feel: 'Delicate and literary. Needs size to breathe.' },
-  { id: 'instrument-serif', name: 'Instrument Serif', css: 'fs-instrument-serif', kind: 'Serif', weight: 400, feel: 'Editorial poster. Tight, contemporary, confident.' },
-  { id: 'dm-serif', name: 'DM Serif Display', css: 'fs-dm-serif', kind: 'Serif', weight: 400, feel: 'Polished and warm. Classic proportions, modern finish.' },
-  { id: 'frank-ruhl', name: 'Frank Ruhl Libre', css: 'fs-frank', kind: 'Serif', weight: 700, feel: 'Sharp serifs, newspaper authority.' },
-  { id: 'eb-garamond', name: 'EB Garamond', css: 'fs-garamond', kind: 'Serif', weight: 600, feel: 'Old-world calm. The quietest elegance here.' },
-  { id: 'young-serif', name: 'Young Serif', css: 'fs-young', kind: 'Serif', weight: 400, feel: 'Chunky slab-ish serif. Modern and grounded.' },
-  { id: 'newsreader', name: 'Newsreader', css: 'fs-newsreader', kind: 'Serif', weight: 600, feel: 'Screen-native editorial. Elegant but sturdy.' },
-  { id: 'spectral', name: 'Spectral', css: 'fs-spectral', kind: 'Serif', weight: 600, feel: 'Slightly condensed, measured, intellectual.' },
-  { id: 'literata', name: 'Literata', css: 'fs-literata', kind: 'Serif', weight: 600, feel: 'Warm and solid. Reads like a good book.' },
-  { id: 'petrona', name: 'Petrona', css: 'fs-petrona', kind: 'Serif', weight: 600, feel: 'Contemporary serif with soft, open forms.' },
-  { id: 'source-serif', name: 'Source Serif 4', css: 'fs-source', kind: 'Serif', weight: 600, feel: 'Neutral serif. Clean, never loud.' },
-  { id: 'syne', name: 'Syne', css: 'fs-syne', kind: 'Sans', weight: 700, feel: 'Art-institution display. Odd widths, deliberate.' },
-  { id: 'jost', name: 'Jost', css: 'fs-jost', kind: 'Sans', weight: 600, feel: 'Geometric Futura lineage. Cool and precise.' },
-  { id: 'outfit', name: 'Outfit', css: 'fs-outfit', kind: 'Sans', weight: 600, feel: 'Even circles, friendly and current.' },
-  { id: 'sora', name: 'Sora', css: 'fs-sora', kind: 'Sans', weight: 600, feel: 'Technical geometric, slightly squared.' },
-  { id: 'gabarito', name: 'Gabarito', css: 'fs-gabarito', kind: 'Sans', weight: 700, feel: 'Rounded and confident. Warm without being soft.' },
-  { id: 'familjen', name: 'Familjen Grotesk', css: 'fs-familjen', kind: 'Sans', weight: 700, feel: 'Scandinavian grotesque, narrow and direct.' },
+  { id: 'clash', name: 'Clash Display', css: 'fs-clash', source: 'Fontshare', weight: 600, feel: 'Purpose-built display cut. Tight, squared, unmistakably contemporary.' },
+  { id: 'cabinet', name: 'Cabinet Grotesk', css: 'fs-cabinet', source: 'Fontshare', weight: 700, feel: 'Wide confident caps with slightly quirky joints. Studio signage.' },
+  { id: 'unbounded', name: 'Unbounded', css: 'fs-unbounded', source: 'Google', weight: 600, feel: 'Geometric and airy with unusual proportions. Loud without decoration.' },
+  { id: 'league', name: 'League Spartan', css: 'fs-league', source: 'Google', weight: 700, feel: 'Heavy geometric. Poster weight, very even colour.' },
+  { id: 'supreme', name: 'Supreme', css: 'fs-supreme', source: 'Fontshare', weight: 700, feel: 'Neo-grotesque with softened corners. Modern and approachable.' },
+  { id: 'general', name: 'General Sans', css: 'fs-general', source: 'Fontshare', weight: 600, feel: 'The clean middle. Neutral, generous, effortless to read.' },
+  { id: 'switzer', name: 'Switzer', css: 'fs-switzer', source: 'Fontshare', weight: 700, feel: 'Swiss precision, zero personality tax. Pure legibility.' },
+  { id: 'chillax', name: 'Chillax', css: 'fs-chillax', source: 'Fontshare', weight: 600, feel: 'Rounded terminals, relaxed and warm. Friendly without being cute.' },
+  { id: 'onest', name: 'Onest', css: 'fs-onest', source: 'Google', weight: 700, feel: 'Humanist, open, slightly warm. Reads instantly at any size.' },
+  { id: 'golos', name: 'Golos Text', css: 'fs-golos', source: 'Google', weight: 700, feel: 'Broad and grounded. Solid mass in large headlines.' },
+  { id: 'hanken', name: 'Hanken Grotesk', css: 'fs-hanken', source: 'Google', weight: 700, feel: 'Compact grotesque, tidy and unfussy.' },
+  { id: 'commissioner', name: 'Commissioner', css: 'fs-commissioner', source: 'Google', weight: 700, feel: 'Low-contrast humanist. Calm authority.' },
+  { id: 'redhat', name: 'Red Hat Display', css: 'fs-redhat', source: 'Google', weight: 700, feel: 'Engineered clarity with subtly angled cuts.' },
+  { id: 'figtree', name: 'Figtree', css: 'fs-figtree', source: 'Google', weight: 800, feel: 'Geometric with a soft edge. Current and unthreatening.' },
+  { id: 'archivo', name: 'Archivo', css: 'fs-archivo', source: 'Google', weight: 700, feel: 'Grotesque built for high performance. Sturdy, newsroom energy.' },
+  { id: 'darker', name: 'Darker Grotesque', css: 'fs-darker', source: 'Google', weight: 700, feel: 'Tall and narrow. Fits long headlines in very little width.' },
 ]

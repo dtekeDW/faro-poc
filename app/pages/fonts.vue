@@ -2,12 +2,12 @@
 useHead({ title: 'Headline faces — Sequence' })
 
 const line = ref('We make videos people remember')
-const filter = ref<'all' | 'Serif' | 'Sans'>('all')
+const filter = ref<'all' | 'Fontshare' | 'Google'>('all')
 
 const faces = computed(() =>
   filter.value === 'all'
     ? HEADLINE_FACES
-    : HEADLINE_FACES.filter(face => face.kind === filter.value),
+    : HEADLINE_FACES.filter(face => face.source === filter.value),
 )
 </script>
 
@@ -31,7 +31,7 @@ const faces = computed(() =>
         >
         <div class="flex gap-2">
           <button
-            v-for="option in (['all', 'Serif', 'Sans'] as const)"
+            v-for="option in (['all', 'Fontshare', 'Google'] as const)"
             :key="option"
             type="button"
             :data-active="filter === option"
@@ -53,7 +53,7 @@ const faces = computed(() =>
         <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <span class="fs-geist text-xs text-dodger">{{ String(index + 1).padStart(2, '0') }}</span>
           <span class="fs-instrument text-sm font-medium">{{ face.name }}</span>
-          <span class="fs-instrument text-xs uppercase tracking-widest text-mute">{{ face.kind }}</span>
+          <span class="fs-instrument text-xs uppercase tracking-widest text-mute">{{ face.source }}</span>
           <span class="fs-instrument ml-auto max-w-[46ch] text-xs leading-relaxed text-mute opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             {{ face.feel }}
           </span>
@@ -62,7 +62,7 @@ const faces = computed(() =>
         <p
           :class="face.css"
           :style="{ fontWeight: face.weight }"
-          class="mt-4 max-w-[18ch] text-[9vw] leading-[0.92] tracking-[-0.03em] text-balance md:text-[4.6vw]"
+          class="mt-5 max-w-[16ch] text-[13vw] leading-[0.84] tracking-[-0.05em] text-balance md:text-[8.5vw]"
         >
           {{ line }}
         </p>
