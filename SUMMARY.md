@@ -6,8 +6,8 @@ Diskussionsgrundlage für [MOP-7626](https://motel-one.atlassian.net/browse/MOP-
 ## Worum es geht
 
 PageSpeed und Lighthouse messen **einmal, im Labor, auf einer Maschine**. Sie
-beantworten nicht die Frage, die nach einem Release zählt: *Ist es für die
-echten Besucher schlechter geworden?*
+beantworten nicht die Frage, die nach einem Release zählt: _Ist es für die
+echten Besucher schlechter geworden?_
 
 Grafana Faro misst im Browser der Nutzer — fortlaufend, auf deren Geräten und
 Verbindungen. Dieser PoC zeigt, wie das aussieht und was man damit sehen kann.
@@ -17,14 +17,14 @@ Verbindungen. Dieser PoC zeigt, wie das aussieht und was man damit sehen kann.
 Eine eigenständige Demo-Anwendung, bewusst **ohne Anbindung ans MS-Frontend**.
 Sechs Seiten, jede identisch aufgebaut, jede mit **genau einem Fehler**:
 
-| Seite | Was daran kaputt ist | Betroffene Messung |
-| --- | --- | --- |
-| `/` | nichts — die Vergleichsseite | alles grün |
-| `/lcp` | Hero-Bild kommt zu spät vom Server | Ladezeit (LCP) |
-| `/cls` | Inhalt ohne reservierten Platz springt nach | Layout-Sprünge (CLS) |
-| `/inp` | Klick wird durch Rechenarbeit blockiert | Reaktionszeit (INP) |
-| `/ttfb` | Server antwortet verzögert | Serverzeit (TTFB) |
-| `/errors` | JavaScript-Fehler, fehlgeschlagene Requests | Fehler |
+| Seite     | Was daran kaputt ist                        | Betroffene Messung   |
+| --------- | ------------------------------------------- | -------------------- |
+| `/`       | nichts — die Vergleichsseite                | alles grün           |
+| `/lcp`    | Hero-Bild kommt zu spät vom Server          | Ladezeit (LCP)       |
+| `/cls`    | Inhalt ohne reservierten Platz springt nach | Layout-Sprünge (CLS) |
+| `/inp`    | Klick wird durch Rechenarbeit blockiert     | Reaktionszeit (INP)  |
+| `/ttfb`   | Server antwortet verzögert                  | Serverzeit (TTFB)    |
+| `/errors` | JavaScript-Fehler, fehlgeschlagene Requests | Fehler               |
 
 Jede Seite hat Schaltflächen für verschiedene Schweregrade und zeigt den
 gemessenen Wert **live an** — aus derselben Quelle, aus der Grafana ihn bekommt.
@@ -39,13 +39,13 @@ Fehler, für den die Seite gebaut wurde.
 
 Gemessene Werte aus einem Durchlauf:
 
-| Szenario | Messung | Bewertung |
-| --- | --- | --- |
-| `/lcp?v=lazy` | LCP **4312 ms** | schlecht (Grenze 2500) |
-| `/cls?level=severe` | CLS **0,508** | schlecht (Grenze 0,1) |
-| `/inp?level=severe` | INP **800 ms** | schlecht (Grenze 200) |
-| `/ttfb?delay=2000` | TTFB **2060 ms** | schlecht (Grenze 800) |
-| `/` (Vergleich) | alle Werte grün | — |
+| Szenario            | Messung          | Bewertung              |
+| ------------------- | ---------------- | ---------------------- |
+| `/lcp?v=lazy`       | LCP **4312 ms**  | schlecht (Grenze 2500) |
+| `/cls?level=severe` | CLS **0,508**    | schlecht (Grenze 0,1)  |
+| `/inp?level=severe` | INP **800 ms**   | schlecht (Grenze 200)  |
+| `/ttfb?delay=2000`  | TTFB **2060 ms** | schlecht (Grenze 800)  |
+| `/` (Vergleich)     | alle Werte grün  | —                      |
 
 ## Nachvollziehbarkeit
 
@@ -61,11 +61,11 @@ die Seiten ab, während der Fortschritt live mitläuft.
 Jedes Szenario bildet ein Muster ab, das im Backlog bereits einzeln analysiert
 wurde:
 
-| Szenario | Frühere Tickets |
-| --- | --- |
-| Langsames Bild | MOP-8316 (Stage-Video mobil), MOP-6431 (große Bilder mobil) |
-| Layout-Sprünge | MOP-7548 (Buchen-Button), MOP-6562 (Footer-Bilder) |
-| Blockierte Klicks | Die MOP-742x-Serie — Booker, Menü, Karte, Slider |
+| Szenario          | Frühere Tickets                                             |
+| ----------------- | ----------------------------------------------------------- |
+| Langsames Bild    | MOP-8316 (Stage-Video mobil), MOP-6431 (große Bilder mobil) |
+| Layout-Sprünge    | MOP-7548 (Buchen-Button), MOP-6562 (Footer-Bilder)          |
+| Blockierte Klicks | Die MOP-742x-Serie — Booker, Menü, Karte, Slider            |
 
 Die Aussage ist deshalb nicht „hier ist ein Werkzeug", sondern: **Die Fragen,
 die letztes Jahr in zwölf Analyse-Tickets von Hand beantwortet wurden,

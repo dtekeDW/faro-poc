@@ -86,7 +86,7 @@ point of the demo and should not depend on an experimental option.
 **Identity and filter are different things.** The run id was folded into the
 page id at first, which meant every run created a fresh set of rows: the same
 six scenarios appeared once per run, and an afternoon of testing produced seven
-pages of pagination. Page id now answers only *what was measured* and stays
+pages of pagination. Page id now answers only _what was measured_ and stays
 stable across runs; the run is carried as a page attribute and used as a
 filter. The table keeps a fixed set of rows, and a run is chosen rather than
 searched for.
