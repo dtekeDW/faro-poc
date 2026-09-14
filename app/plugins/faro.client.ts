@@ -21,12 +21,22 @@ declare global {
 }
 
 /**
+ * Parameters that identify a *run* rather than a page. They are carried as
+ * attributes so a dashboard can filter on them, but they must never become
+ * part of the page id: folding them in makes every run create a fresh set of
+ * rows, so the same six scenarios appear once per run and the table grows
+ * without bound. Identity answers "what was measured"; these answer "when".
+ */
+const RUN_PARAMS = new Set(['run'])
+
+/**
  * Stable, readable identity: `/lcp?v=lazy`, with parameters sorted so that
  * `?b=2&a=1` and `?a=1&b=2` are the same row rather than two.
  */
 function buildPageId(pathname: string, search: string) {
   const params = new URLSearchParams(search)
   const parts = [...new Set(params.keys())]
+    .filter(key => !RUN_PARAMS.has(key))
     .sort()
     .map((key) => {
       const value = params.get(key)

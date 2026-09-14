@@ -68,25 +68,28 @@ const steps: Step[] = [
   { path: '/ttfb?delay=0', label: 'ttfb none', target: 'ttfb' },
   { path: '/ttfb?delay=900', label: 'ttfb slow', target: 'ttfb' },
   { path: '/ttfb?delay=2000', label: 'ttfb very slow', target: 'ttfb' },
-  ...(['Light', 'Heavy', 'Severe', 'Storm'] as const).map(level => ({
-    path: '/cls',
-    label: `cls ${level.toLowerCase()}`,
+  /*
+   * Entered by URL, not by clicking. The level has to be in the entry URL or
+   * the scenario splits across two dashboard rows: the load metrics land on
+   * the URL the browser arrived at, and the shift lands on whatever the page
+   * rewrote itself to afterwards.
+   */
+  ...(['light', 'heavy', 'severe', 'storm'] as const).map(level => ({
+    path: `/cls?level=${level}`,
+    label: `cls ${level}`,
     target: 'cls',
-    drive: async (page: Page) => {
-      await page.getByRole('button', { name: new RegExp(`^${level}`) }).click()
-      // The lab delays injection past the input exclusion window on purpose.
-      await page.waitForTimeout(3500)
-    },
+    // The lab provokes the level itself on load, past the input window.
+    settleMs: 4500,
   })),
-  ...(['Instant', 'Light', 'Heavy', 'Severe'] as const).map(level => ({
-    path: '/inp',
-    label: `inp ${level.toLowerCase()}`,
+  ...([['instant', 'Instant'], ['light', 'Light'], ['heavy', 'Heavy'], ['severe', 'Severe']] as const).map(([id, label]) => ({
+    path: `/inp?level=${id}`,
+    label: `inp ${id}`,
     target: 'inp',
     drive: async (page: Page) => {
-      // Clicked three times so the reported INP is a settled p75, not one
-      // outlier: the metric reports a high percentile of all interactions.
+      // INP still needs real input; the URL only says which weight it carries.
+      // Clicked three times so the reading is settled rather than one outlier.
       for (let i = 0; i < 3; i++) {
-        await page.getByRole('button', { name: new RegExp(`^${level}`) }).click()
+        await page.getByRole('button', { name: new RegExp(`^${label}`) }).click()
         await page.waitForTimeout(700)
       }
     },

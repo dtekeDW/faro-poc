@@ -87,22 +87,23 @@ onMounted(() => {
 
 const timers: ReturnType<typeof setTimeout>[] = []
 
-const router = useRouter()
 const route = useRoute()
 
 /**
- * Records the severity in the query string, which `useFaroPage` folds into the
- * page id. Without it every press of every button lands under `/cls` and the
- * dashboard cannot say which one produced the score. Replaced rather than
- * pushed: a new document would reset the measurement that is being built up.
+ * The severity comes from the URL rather than from a click.
+ *
+ * Setting it after a press split every scenario across two dashboard rows: the
+ * entry URL collected the load metrics and the rewritten one collected the
+ * shift, so neither row ever showed a complete picture. Carried in the entry
+ * URL, one page id gathers TTFB, FCP, LCP and CLS together — and every bad
+ * state becomes a link that can simply be opened.
  */
-function markLevel(id: string) {
-  router.replace({ query: { ...route.query, level: id } })
-}
+const urlLevel = computed(() =>
+  severities.find(entry => entry.id === route.query.level) ?? null,
+)
 
 function provoke(severity: Severity) {
   lastPressed.value = severity
-  markLevel(severity.id)
   pending.value++
 
   for (let index = 0; index < severity.bursts; index++) {
@@ -129,6 +130,13 @@ function reset() {
 }
 
 onBeforeUnmount(() => timers.forEach(clearTimeout))
+
+// A level in the URL provokes itself, so the scenario is reproducible by
+// opening a link rather than by remembering which button to press.
+onMounted(() => {
+  if (urlLevel.value)
+    provoke(urlLevel.value)
+})
 </script>
 
 <template>

@@ -38,26 +38,31 @@ function rate(duration: number) {
   return { word: 'poor', tone: 'text-[#ff6b5e]' }
 }
 
-const router = useRouter()
 const route = useRoute()
+
+/**
+ * The severity comes from the URL, so one page id collects the whole scenario.
+ * Rewriting it on press split each one across two dashboard rows — the entry
+ * URL held the load metrics, the rewritten one held the interaction.
+ *
+ * INP still needs a real click; the URL only says which weight that click
+ * should carry.
+ */
+const urlLevel = computed(() =>
+  severities.find(entry => entry.id === route.query.level) ?? null,
+)
 
 /** Blocks the main thread inside the handler, which is what INP measures. */
 function press(severity: Severity) {
   lastPressed.value = severity
-
-  /*
-   * Records the severity in the query string, which `useFaroPage` folds into
-   * the page id. Without it every button lands under `/inp` and the dashboard
-   * cannot say which weight produced the reading. Replaced rather than pushed,
-   * so the document — and the interaction being measured — survives.
-   */
-  router.replace({ query: { ...route.query, level: severity.id } })
 
   const until = performance.now() + severity.block
   while (performance.now() < until) { /* deliberate busy wait */ }
 }
 
 onMounted(() => {
+  lastPressed.value = urlLevel.value ?? lastPressed.value
+
   /**
    * Reads the browser's own interaction latency rather than timing the handler
    * ourselves. This is the same Event Timing data the web-vitals library feeds

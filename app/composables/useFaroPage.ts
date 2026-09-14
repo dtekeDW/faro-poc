@@ -14,9 +14,17 @@
  * leave the rest as attributes.
  */
 
-/** Stable, readable identity: `/inp?heavy&v=1` rather than raw URL order. */
+/**
+ * Parameters that identify a run rather than a page. Kept out of the id for
+ * the same reason as in the plugin: identity must stay stable across runs, or
+ * every run multiplies the rows in the dashboard.
+ */
+const RUN_PARAMS = new Set(['run'])
+
+/** Stable, readable identity: `/inp?level=severe` rather than raw URL order. */
 function buildPageId(path: string, query: Record<string, unknown>) {
   const parts = Object.keys(query)
+    .filter(key => !RUN_PARAMS.has(key))
     .sort()
     .map((key) => {
       const value = query[key]

@@ -83,6 +83,20 @@ Both are set explicitly in `ScenarioShell` rather than left to the SDK's
 `trackNavigation` flag, because the page a signal is filed under is the whole
 point of the demo and should not depend on an experimental option.
 
+**Identity and filter are different things.** The run id was folded into the
+page id at first, which meant every run created a fresh set of rows: the same
+six scenarios appeared once per run, and an afternoon of testing produced seven
+pages of pagination. Page id now answers only *what was measured* and stays
+stable across runs; the run is carried as a page attribute and used as a
+filter. The table keeps a fixed set of rows, and a run is chosen rather than
+searched for.
+
+The severity belongs in the entry URL for the same reason. Setting it after a
+click split each scenario across two rows — the load metrics landed on the URL
+the browser arrived at, the interaction landed on whatever the page rewrote
+itself to. Every bad state is now a link that can simply be opened:
+`/cls?level=storm`, `/inp?level=severe`, `/lcp?v=lazy`, `/ttfb?delay=2000`.
+
 **Telling two runs of the same route apart.** Faro's `page.id` is what the
 Page Performance table shows in its first column; unset, it falls back to the
 path, so `/cls?test=1` and `/cls?test=2` were indistinguishable. It is now set
@@ -157,13 +171,13 @@ wrong.
 Provoking a bad score turned out to be harder than expected, and every failure
 was silent — a green number, never an error. Verified end to end in Grafana:
 
-| Page | Measured |
-| --- | --- |
-| `/lcp?v=good` · `v=heavy` | 240ms · 320ms — good |
-| `/lcp?v=slow` | **3036ms** — needs improvement |
-| `/lcp?v=lazy` | **4100ms** — poor |
-| `/inp?level=instant` → `severe` | 40 · 144 · 376 · **832ms** |
-| `/cls?level=storm` · `severe` | **0.409** · **0.500** |
+| Page                            | Measured                       |
+| ------------------------------- | ------------------------------ |
+| `/lcp?v=good` · `v=heavy`       | 240ms · 320ms — good           |
+| `/lcp?v=slow`                   | **3036ms** — needs improvement |
+| `/lcp?v=lazy`                   | **4100ms** — poor              |
+| `/inp?level=instant` → `severe` | 40 · 144 · 376 · **832ms**     |
+| `/cls?level=storm` · `severe`   | **0.409** · **0.500**          |
 
 **LCP is not about file size.** The first version served a 2400px original and
 still scored green: a large image arrives from a nearby server in milliseconds.
