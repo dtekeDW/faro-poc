@@ -89,13 +89,13 @@ path, so `/cls?test=1` and `/cls?test=2` were indistinguishable. It is now set
 explicitly, and a short list of deliberate labelling parameters — `test`, `run`,
 `v`, `delay` — becomes part of it:
 
-| URL | Page ID | Page attributes |
-| --- | --- | --- |
-| `/cls` | `/cls` | `scenario=cls`, `metric=CLS` |
-| `/cls?test=2` | `/cls?test=2` | … plus `param_test=2` |
-| `/ttfb?delay=900` | `/ttfb?delay=900` | … plus `param_delay=900` |
+| URL               | Page ID           | Page attributes              |
+| ----------------- | ----------------- | ---------------------------- |
+| `/cls`            | `/cls`            | `scenario=cls`, `metric=CLS` |
+| `/cls?test=2`     | `/cls?test=2`     | … plus `param_test=2`        |
+| `/ttfb?delay=900` | `/ttfb?delay=900` | … plus `param_delay=900`     |
 
-Only that list joins the id. Folding *every* query parameter into it would be
+Only that list joins the id. Folding _every_ query parameter into it would be
 wrong outside a demo: page id is a grouping key, and a single unbounded
 parameter — a search term, a tracking token, a session id — turns a readable
 table into thousands of one-visit rows. Every other parameter is still carried,

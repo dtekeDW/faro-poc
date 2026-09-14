@@ -10,7 +10,7 @@
     "prepare": "nuxt prepare",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
-    "seed": "tsx scripts/generate-traffic.ts",
+    "seed": "tsx scripts/seed.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
