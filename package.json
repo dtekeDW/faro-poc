@@ -1,0 +1,31 @@
+{
+  "name": "faro-poc",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@11.5.2",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "prepare": "nuxt prepare",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "seed": "tsx scripts/generate-traffic.ts"
+  },
+  "dependencies": {
+    "@grafana/faro-web-sdk": "^2.11.0",
+    "@grafana/faro-web-tracing": "^2.11.0",
+    "lucide-vue-next": "^0.460.0",
+    "nuxt": "^4.4.7",
+    "reka-ui": "^2.6.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vue-tsc": "^2.2.0"
+  }
+}

@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/*
+ * Two-tone world: near-black ground, one saturated blue that carries every
+ * accent. The blue is the only hue on the page, so it has to do the work of a
+ * whole palette — it marks the active state, the link, the focus ring and the
+ * menu's inverted ground.
+ */
+@theme {
+  --color-ink: #060606;
+  --color-ink-raised: #0e1013;
+  --color-dodger: #1095fb;
+  --color-dodger-deep: #0a6cb8;
+  --color-chalk: #f2f5f8;
+  --color-mute: #8a949e;
+
+  --font-display: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Instrument Serif", ui-serif, Georgia, serif;
+
+  /* Exponential ease-out: fast commit, long settle. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  color-scheme: dark;
+  /* Drives the menu inversion; every surface reads from it. */
+  --ground: var(--color-ink);
+}
+
+html {
+  background-color: var(--ground);
+  transition: background-color 700ms var(--ease-out-expo);
+  scrollbar-color: color-mix(in oklab, var(--color-dodger) 55%, transparent) transparent;
+}
+
+body {
+  background-color: transparent;
+}
+
+/*
+ * Browser-owned surfaces. Left at their defaults these belong to no design
+ * system and quietly announce that the page was assembled rather than built.
+ */
+::selection {
+  background-color: var(--color-dodger);
+  color: var(--color-ink);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--color-dodger) 45%, transparent);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dodger);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-dodger);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+input,
+textarea {
+  caret-color: var(--color-dodger);
+}
+
+/* Tabular figures wherever numbers are compared rather than read. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
