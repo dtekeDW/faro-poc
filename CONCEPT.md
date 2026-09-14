@@ -181,6 +181,9 @@ CLS, INP, TTFB and error capture all provoke reliably.
   pages that provoke the metric it is named after, plus the control, and every
   URL carries `run=<id>`. The id leads with the target, so a dashboard filter
   reads as the question it answers — `run=inp-2026-09-14-1803-mxzd`.
+- **Named runs.** The lab takes a name and folds it into the run id, so a run
+  started in front of an audience is `run=inp-po-demo` rather than a timestamp
+  to be matched against a clock afterwards.
 - **`/lab` as a controller.** The lab no longer drives the scenarios itself; it
   starts a seeding run on the server and streams its log. Driving them in an
   iframe registered the page loads but lost the measurements, because

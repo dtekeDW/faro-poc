@@ -9,11 +9,6 @@ interface SeedJob {
   exitCode: number | null
 }
 
-/**
- * Targeted runs. Each one touches only the pages that provoke the metric it is
- * named after, plus the control — so everything it sends answers one question,
- * and `run=inp-…` becomes a dashboard filter rather than just a timestamp.
- */
 const targets = [
   { id: 'all', label: 'Everything' },
   { id: 'lcp', label: 'LCP' },
@@ -25,35 +20,29 @@ const targets = [
 
 const target = ref('all')
 const passes = ref(3)
+const name = ref('')
+
 const runId = ref<string | null>(null)
 const job = ref<SeedJob | null>(null)
 const isStarting = ref(false)
 const error = ref<string | null>(null)
 
-const config = useRuntimeConfig().public.faro
-const dashboardUrl = computed(() => config.dashboardUrl || '')
+const dashboardUrl = computed(() => useRuntimeConfig().public.faro.dashboardUrl || '')
 
 let poll: ReturnType<typeof setInterval> | null = null
 
-/**
- * Drives the run through Playwright on the server rather than through an
- * iframe in this page. The iframe version registered the page loads but lost
- * the measurements: web-vitals reports LCP, CLS and INP when a page is hidden
- * or unloaded, and swapping an iframe's src does not deliver those signals
- * reliably. A real top-level navigation does — and Playwright's input is
- * trusted, which is the only way INP can be produced without a human clicking.
- */
 async function start() {
   if (isStarting.value || job.value?.isRunning)
     return
 
   isStarting.value = true
   error.value = null
+  job.value = null
 
   try {
     const started = await $fetch<{ runId: string }>('/api/seed', {
       method: 'POST',
-      body: { passes: passes.value, target: target.value },
+      body: { passes: passes.value, target: target.value, name: name.value },
     })
 
     runId.value = started.runId
@@ -81,9 +70,9 @@ function watchJob(id: string) {
       }
     }
     catch {
-      // The run may not be registered for a beat; the next tick retries.
+      // Not registered for a beat; the next tick retries.
     }
-  }, 1000)
+  }, 900)
 }
 
 onBeforeUnmount(() => {
@@ -91,140 +80,195 @@ onBeforeUnmount(() => {
     clearInterval(poll)
 })
 
-const completed = computed(() =>
-  (job.value?.lines ?? []).filter(line => / ok$/.test(line)).length,
-)
+/**
+ * Turns the seeder's stdout into rows.
+ *
+ * Raw console output makes a reader parse a log while a demo is running. The
+ * lines are structured — `pass 2  inp severe  ok` — so they can be read back
+ * into the shape they always had.
+ */
+const steps = computed(() => {
+  const rows = []
 
-/** Step count depends on the target, so it is read from the run's own log. */
-const expected = computed(() => {
+  for (const line of job.value?.lines ?? []) {
+    if (!line.startsWith('pass '))
+      continue
+
+    // Parsed by hand rather than by pattern: a regex spanning the label
+    // between two runs of whitespace backtracks badly on adversarial input,
+    // and this format is simple enough not to need one.
+    const rest = line.slice(5).trimStart()
+    const boundary = rest.indexOf(' ')
+    if (boundary < 0)
+      continue
+
+    const pass = Number(rest.slice(0, boundary))
+    if (!Number.isFinite(pass))
+      continue
+
+    const tail = rest.slice(boundary).trim()
+    const failed = tail.endsWith('failed') || tail.includes('failed:')
+    const label = tail
+      .replace(/\s+ok$/, '')
+      .replace(/\s+failed.*$/, '')
+      .trim()
+
+    rows.push({ pass, label, failed })
+  }
+
+  return rows.reverse()
+})
+
+const plan = computed(() => {
   const line = (job.value?.lines ?? []).find(entry => entry.includes('passes over'))
   const match = line?.match(/(\d+) passes over (\d+) steps/)
 
-  return match ? Number(match[1]) * Number(match[2]) : null
+  return match ? { passes: Number(match[1]), steps: Number(match[2]) } : null
 })
+
+const expected = computed(() => (plan.value ? plan.value.passes * plan.value.steps : null))
+const failures = computed(() => steps.value.filter(step => step.failed).length)
 </script>
 
 <template>
   <div class="section pt-32">
-    <header class="max-w-[60ch]">
+    <header class="max-w-[46ch]">
       <h1 class="type-section">
         <PerCharacterRise text="Metrics lab" />
       </h1>
       <p class="type-body mt-7 text-mute">
-        Every route below is the same page with exactly one thing wrong with it.
-        A run walks all of them in a real browser and sends one clean set of
-        measurements per defect, so the dashboard reads as a table with a single
-        red cell per row.
+        A run walks the pages that provoke one metric, in a real browser, and
+        labels everything it sends so the dashboard can single it out.
       </p>
     </header>
 
-    <div class="mt-10 flex flex-wrap gap-2">
-      <button
-        v-for="option in targets"
-        :key="option.id"
-        type="button"
-        :data-active="target === option.id"
-        class="pill"
-        :disabled="job?.isRunning"
-        @click="target = option.id"
-      >
-        {{ option.label }}
-      </button>
-    </div>
-
-    <div class="mt-8 flex flex-wrap items-center gap-4">
-      <button
-        type="button"
-        class="pill"
-        :disabled="isStarting || job?.isRunning"
-        @click="start()"
-      >
-        {{ job?.isRunning ? 'Running…' : 'Start run' }}
-      </button>
-
-      <label class="flex items-center gap-2 text-sm text-mute">
-        Passes
-        <input
-          v-model.number="passes"
-          type="number"
-          min="1"
-          max="30"
-          class="type-data w-16 border-b border-chalk/20 bg-transparent pb-1 text-center outline-none focus:border-dodger"
+    <!-- Controls first, in the order they are used: what to run, what to call
+         it, how much of it, then go. -->
+    <div class="mt-16 max-w-4xl space-y-8">
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="option in targets"
+          :key="option.id"
+          type="button"
+          :data-active="target === option.id"
+          class="pill"
+          :disabled="job?.isRunning"
+          @click="target = option.id"
         >
-      </label>
+          {{ option.label }}
+        </button>
+      </div>
 
-      <span v-if="job" class="type-data text-sm text-mute">
-        {{ completed }}<template v-if="expected"> / {{ expected }}</template>
-      </span>
+      <div class="flex flex-wrap items-end gap-x-10 gap-y-6">
+        <label class="min-w-[16rem] flex-1">
+          <span class="block text-xs text-mute">Name this run</span>
+          <input
+            v-model="name"
+            type="text"
+            placeholder="po-demo"
+            :disabled="job?.isRunning"
+            class="type-data mt-2 w-full border-b border-chalk/20 bg-transparent pb-2 text-lg outline-none transition-colors placeholder:text-mute/50 focus:border-dodger"
+            @keydown.enter="start()"
+          >
+        </label>
 
-      <a
-        v-if="dashboardUrl"
-        :href="dashboardUrl"
-        target="_blank"
-        rel="noopener"
-        class="link-wipe text-sm text-dodger"
-      >
-        Open the dashboard
-      </a>
+        <label>
+          <span class="block text-xs text-mute">Passes</span>
+          <input
+            v-model.number="passes"
+            type="number"
+            min="1"
+            max="30"
+            :disabled="job?.isRunning"
+            class="type-data mt-2 w-20 border-b border-chalk/20 bg-transparent pb-2 text-lg outline-none focus:border-dodger"
+          >
+        </label>
+
+        <button
+          type="button"
+          class="pill px-8"
+          :disabled="isStarting || job?.isRunning"
+          @click="start()"
+        >
+          {{ job?.isRunning ? 'Running…' : 'Start run' }}
+        </button>
+      </div>
+
+      <p v-if="error" class="text-sm text-[#ff6b5e]">
+        {{ error }}
+      </p>
     </div>
 
-    <p v-if="runId" class="type-data mt-5 text-sm text-dodger">
-      {{ runId }}
-    </p>
-    <p v-if="runId" class="type-body mt-2 text-sm text-mute">
-      Every measurement from this run carries that label, so it can be told
-      apart from every other run in the dashboard.
-    </p>
+    <!-- The run itself. Nothing else competes with it once it is going. -->
+    <div v-if="runId" class="rule mt-16 max-w-4xl pt-10">
+      <div class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
+        <p class="type-data text-lg text-dodger">
+          run={{ runId }}
+        </p>
+        <p class="type-data text-sm text-mute">
+          {{ steps.length }}<template v-if="expected">
+            / {{ expected }}
+          </template>
+          <template v-if="failures">
+            · {{ failures }} failed
+          </template>
+        </p>
+      </div>
 
-    <p v-if="error" class="mt-5 text-sm text-[#ff6b5e]">
-      {{ error }}
-    </p>
+      <!-- A bar rather than a number: progress is a shape, and a demo audience
+           reads a shape faster than a fraction. -->
+      <div v-if="expected" class="mt-5 h-px w-full bg-chalk/15">
+        <div
+          class="h-px bg-dodger transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :style="{ width: `${Math.min((steps.length / expected) * 100, 100)}%` }"
+        />
+      </div>
 
-    <div class="mt-14 grid gap-10 lg:grid-cols-[1fr_1.15fr]">
-      <ol class="rule border-t">
+      <ol v-if="steps.length" class="mt-8 max-h-[24rem] overflow-y-auto">
         <li
-          v-for="scenario in SCENARIOS"
-          :key="scenario.id"
-          class="border-b border-chalk/10 py-6"
+          v-for="(step, index) in steps"
+          :key="`${step.pass}-${step.label}-${index}`"
+          class="flex items-baseline justify-between gap-6 border-b border-chalk/10 py-3"
         >
-          <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <span class="type-data text-xs text-dodger">
-              {{ scenario.metric === 'none' ? '—' : scenario.metric }}
+          <span class="text-sm">{{ step.label }}</span>
+          <span class="flex items-baseline gap-5">
+            <span class="type-data text-xs text-mute">pass {{ step.pass }}</span>
+            <span class="type-data text-xs" :class="step.failed ? 'text-[#ff6b5e]' : 'text-dodger'">
+              {{ step.failed ? 'failed' : 'sent' }}
             </span>
-            <NuxtLink
-              :to="scenario.id === 'healthy' ? '/' : `/${scenario.id}`"
-              class="type-title link-wipe"
-            >
-              {{ scenario.label }}
-            </NuxtLink>
-          </div>
-          <p class="type-body mt-2 text-sm text-mute">
-            {{ scenario.cause }}
-          </p>
-          <p class="mt-1 text-sm text-chalk/70">
-            {{ scenario.effect }}
-          </p>
+          </span>
         </li>
       </ol>
 
-      <div>
-        <ol
-          v-if="job?.lines.length"
-          class="type-data max-h-[30rem] space-y-1 overflow-y-auto border border-chalk/12 p-5 text-xs text-mute"
-        >
-          <li v-for="(line, index) in [...job.lines].reverse()" :key="index">
-            {{ line }}
-          </li>
-        </ol>
-        <div v-else class="grid min-h-[16rem] place-items-center border border-chalk/12 text-sm text-mute">
-          The run log appears here
-        </div>
+      <p v-else class="mt-8 text-sm text-mute">
+        Starting the browser…
+      </p>
 
-        <p v-if="job && !job.isRunning" class="type-body mt-5 text-sm text-mute">
-          Finished. Signals reach Grafana within about a minute — filter on
-          <span class="type-data text-chalk">run={{ runId }}</span>.
-        </p>
-      </div>
+      <p v-if="job && !job.isRunning" class="type-body mt-8 text-sm text-mute">
+        Finished. Signals reach Grafana within about a minute — filter on
+        <span class="type-data text-chalk">run={{ runId }}</span>.
+        <a
+          v-if="dashboardUrl"
+          :href="dashboardUrl"
+          target="_blank"
+          rel="noopener"
+          class="link-wipe ml-2 text-dodger"
+        >Open the dashboard</a>
+      </p>
     </div>
+
+    <!-- The scenarios keep their explanations on their own pages, where there
+         is room for them. Here they only need to be reachable. -->
+    <nav class="rule mt-20 flex flex-wrap items-center gap-x-8 gap-y-3 pt-8 text-sm">
+      <span class="text-mute">Open a scenario</span>
+      <NuxtLink
+        v-for="scenario in SCENARIOS"
+        :key="scenario.id"
+        :to="scenario.id === 'healthy' ? '/' : `/${scenario.id}`"
+        class="link-wipe text-chalk"
+      >
+        {{ scenario.menuLabel }}
+      </NuxtLink>
+    </nav>
   </div>
 </template>

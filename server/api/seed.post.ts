@@ -15,7 +15,7 @@ import process from 'node:process'
  * anything deployed.
  */
 export default defineEventHandler(async (event) => {
-  interface SeedRequest { passes?: number, target?: string }
+  interface SeedRequest { passes?: number, target?: string, name?: string }
 
   const body: SeedRequest = await readBody<SeedRequest>(event).catch(() => ({}))
   const passes = Math.min(Math.max(Number(body.passes) || 3, 1), 30)
@@ -25,11 +25,19 @@ export default defineEventHandler(async (event) => {
 
   /*
    * The run id leads with the target, so a dashboard filter reads as the
-   * question it answers: `run=inp-2026-09-14-1801-k3f9`.
+   * question it answers. A name given in the lab replaces the random suffix,
+   * which is what makes a run findable during a demo — `run=inp-po-demo` beats
+   * scanning a list of timestamps for the one you just started.
    */
-  const stamp = new Date().toISOString().slice(0, 10)
+  const slug = String(body.name ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 32)
+
   const time = new Date().toTimeString().slice(0, 5).replace(':', '')
-  const runId = `${target}-${stamp}-${time}-${Date.now().toString(36).slice(-4)}`
+  const suffix = slug || `${new Date().toISOString().slice(0, 10)}-${time}-${Date.now().toString(36).slice(-4)}`
+  const runId = `${target}-${suffix}`
 
   const child = spawn('pnpm', ['exec', 'tsx', 'scripts/seed.ts'], {
     cwd: process.cwd(),
