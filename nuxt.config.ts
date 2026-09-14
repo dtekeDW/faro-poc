@@ -13,11 +13,27 @@ export default defineNuxtConfig({
     // faces as custom properties inside @theme, which the scanner does not read
     // as font-family declarations, so nothing would be downloaded.
     families: [
+      // Headline candidates for the specimen wall at /fonts.
+      { name: 'Bodoni Moda', provider: 'google', weights: [700] },
+      { name: 'Cormorant Garamond', provider: 'google', weights: [600] },
+      { name: 'Instrument Serif', provider: 'google', weights: [400] },
+      { name: 'DM Serif Display', provider: 'google', weights: [400] },
+      { name: 'Frank Ruhl Libre', provider: 'google', weights: [700] },
+      { name: 'EB Garamond', provider: 'google', weights: [600] },
+      { name: 'Young Serif', provider: 'google', weights: [400] },
+      { name: 'Newsreader', provider: 'google', weights: [600] },
+      { name: 'Spectral', provider: 'google', weights: [600] },
+      { name: 'Literata', provider: 'google', weights: [600] },
+      { name: 'Petrona', provider: 'google', weights: [600] },
+      { name: 'Source Serif 4', provider: 'google', weights: [600] },
+      { name: 'Syne', provider: 'google', weights: [700] },
+      { name: 'Jost', provider: 'google', weights: [600] },
+      { name: 'Outfit', provider: 'google', weights: [600] },
+      { name: 'Sora', provider: 'google', weights: [600] },
+      { name: 'Gabarito', provider: 'google', weights: [700] },
+      { name: 'Familjen Grotesk', provider: 'google', weights: [700] },
+      // In use on the site.
       { name: 'Epilogue', provider: 'google', weights: [400, 500, 700, 800] },
-      { name: 'Albert Sans', provider: 'google', weights: [400, 500, 700, 800] },
-      { name: 'Newsreader', provider: 'google', weights: [400, 500, 700], styles: ['normal', 'italic'] },
-      { name: 'Urbanist', provider: 'google', weights: [400, 500, 700, 800] },
-      { name: 'Literata', provider: 'google', weights: [400, 500, 700], styles: ['normal', 'italic'] },
       { name: 'Instrument Sans', provider: 'google', weights: [400, 500, 700] },
       { name: 'Geist Mono', provider: 'google', weights: [400, 500] },
     ],

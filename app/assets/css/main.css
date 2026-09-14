@@ -47,10 +47,26 @@ body {
  * nothing and silently ships no @font-face. These classes are used by the
  * specimen page, so they are not dead weight.
  */
-.fs-epilogue { font-family: "Epilogue", ui-sans-serif, sans-serif; }
-.fs-albert { font-family: "Albert Sans", ui-sans-serif, sans-serif; }
+.fs-bodoni { font-family: "Bodoni Moda", ui-serif, Georgia, serif; }
+.fs-cormorant { font-family: "Cormorant Garamond", ui-serif, Georgia, serif; }
+.fs-instrument-serif { font-family: "Instrument Serif", ui-serif, Georgia, serif; }
+.fs-dm-serif { font-family: "DM Serif Display", ui-serif, Georgia, serif; }
+.fs-frank { font-family: "Frank Ruhl Libre", ui-serif, Georgia, serif; }
+.fs-garamond { font-family: "EB Garamond", ui-serif, Georgia, serif; }
+.fs-young { font-family: "Young Serif", ui-serif, Georgia, serif; }
 .fs-newsreader { font-family: "Newsreader", ui-serif, Georgia, serif; }
-.fs-urbanist { font-family: "Urbanist", ui-sans-serif, sans-serif; }
+.fs-spectral { font-family: "Spectral", ui-serif, Georgia, serif; }
+.fs-literata { font-family: "Literata", ui-serif, Georgia, serif; }
+.fs-petrona { font-family: "Petrona", ui-serif, Georgia, serif; }
+.fs-source { font-family: "Source Serif 4", ui-serif, Georgia, serif; }
+.fs-syne { font-family: "Syne", ui-sans, sans-serif; }
+.fs-jost { font-family: "Jost", ui-sans, sans-serif; }
+.fs-outfit { font-family: "Outfit", ui-sans, sans-serif; }
+.fs-sora { font-family: "Sora", ui-sans, sans-serif; }
+.fs-gabarito { font-family: "Gabarito", ui-sans, sans-serif; }
+.fs-familjen { font-family: "Familjen Grotesk", ui-sans, sans-serif; }
+.fs-epilogue { font-family: "Epilogue", ui-sans-serif, sans-serif; }
+.fs-newsreader { font-family: "Newsreader", ui-serif, Georgia, serif; }
 .fs-literata { font-family: "Literata", ui-serif, Georgia, serif; }
 .fs-instrument { font-family: "Instrument Sans", ui-sans-serif, sans-serif; }
 .fs-geist { font-family: "Geist Mono", ui-monospace, monospace; }
