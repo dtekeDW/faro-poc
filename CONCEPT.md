@@ -117,6 +117,18 @@ The lab now shows both numbers side by side, because the gap between them is
 itself the lesson: twenty small nudges spread over a minute score far better
 than one late hero.
 
+Two further corrections followed from testing it. Blocks injected inside a
+panel stopped raising the score after the first press, because the content they
+displaced had already scrolled out of view — and a shift is scored by how much
+of the *viewport* moved times how far it travelled. They are now injected at the
+very top of the page, so they displace everything on screen, exactly as a late
+consent bar does.
+
+And because separate presses land in separate bursts and therefore never add
+up, a **Storm** option sends four arrivals a third of a second apart. They chain
+into one burst and their values accumulate, which is the only way separate
+shifts ever combine.
+
 **There is no deadline.** CLS accumulates for the entire life of the page and
 is reported when it is hidden or left. A shift an hour after load still counts,
 which is why long-lived pages and infinite scrolls are where it usually goes

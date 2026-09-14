@@ -99,6 +99,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     </nav>
 
     <main>
+      <!-- Injection point for the layout-shift lab. Content placed here sits
+           above everything, so it displaces the entire visible page the way a
+           late consent bar does — which is what makes the shift score large. -->
+      <div id="shift-zone" />
       <slot />
     </main>
 

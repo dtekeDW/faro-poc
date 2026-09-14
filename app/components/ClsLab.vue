@@ -5,6 +5,11 @@ interface Severity {
   /** Height in pixels the injected block occupies once it arrives. */
   height: number
   note: string
+  /**
+   * How many blocks arrive. More than one lands them inside a single burst,
+   * which is the only way separate shifts ever add together.
+   */
+  bursts: number
 }
 
 /**
@@ -13,9 +18,10 @@ interface Severity {
  * These three straddle the 0.1 and 0.25 thresholds in a single press.
  */
 const severities: Severity[] = [
-  { id: 'light', label: 'Light', height: 90, note: 'A thin notice bar. Noticeable, usually still inside the good band.' },
-  { id: 'heavy', label: 'Heavy', height: 340, note: 'An image block. Pushes the paragraph most of a screen down.' },
-  { id: 'severe', label: 'Severe', height: 900, note: 'A full hero arriving late. Everything the reader had found is gone from view.' },
+  { id: 'light', label: 'Light', height: 90, note: 'A thin notice bar. Noticeable, usually still inside the good band.', bursts: 1 },
+  { id: 'heavy', label: 'Heavy', height: 340, note: 'An image block. Pushes most of the visible page down.', bursts: 1 },
+  { id: 'severe', label: 'Severe', height: 720, note: 'A full hero arriving late. Everything the reader had found leaves the screen.', bursts: 1 },
+  { id: 'storm', label: 'Storm', height: 260, note: 'Four separate arrivals, each a third of a second apart — they chain into one burst and their values add up.', bursts: 4 },
 ]
 
 interface Block {
@@ -85,14 +91,20 @@ function provoke(severity: Severity) {
   lastPressed.value = severity
   pending.value++
 
-  timers.push(setTimeout(() => {
-    blocks.value = [...blocks.value, {
-      key: `${severity.id}-${Date.now()}`,
-      height: severity.height,
-      label: severity.label,
-    }]
-    pending.value--
-  }, INPUT_EXCLUSION_MS))
+  for (let index = 0; index < severity.bursts; index++) {
+    // Spaced under a second apart so consecutive arrivals chain into the same
+    // five-second burst rather than each starting a new one.
+    timers.push(setTimeout(() => {
+      blocks.value = [...blocks.value, {
+        key: `${severity.id}-${Date.now()}-${index}`,
+        height: severity.height,
+        label: severity.label,
+      }]
+
+      if (index === severity.bursts - 1)
+        pending.value--
+    }, INPUT_EXCLUSION_MS + index * 320))
+  }
 }
 
 function reset() {
@@ -134,16 +146,6 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
     <div class="mt-12 grid gap-10 md:grid-cols-[1.6fr_1fr] md:items-start">
       <div data-testid="cls-stage" class="border border-chalk/12 p-6">
-        <!-- Unsized on purpose: reserving no space is the entire defect. -->
-        <div
-          v-for="block in blocks"
-          :key="block.key"
-          class="mb-4 grid place-items-center bg-ink-raised text-xs text-mute"
-          :style="{ height: `${block.height}px` }"
-        >
-          {{ block.label }} block
-        </div>
-
         <p class="type-body text-mute">
           This paragraph has not changed. Everything that moves it was inserted
           above it after the page had settled — which is precisely what
@@ -177,6 +179,23 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
         </div>
       </div>
     </div>
+
+    <!--
+      Injected at the very top of the page rather than inside this box. A shift
+      is scored by how much of the viewport moved times how far it travelled,
+      so displacing everything on screen scores an order of magnitude worse
+      than nudging one paragraph that has already scrolled out of view.
+    -->
+    <Teleport to="#shift-zone">
+      <div
+        v-for="block in blocks"
+        :key="block.key"
+        class="grid place-items-center border-b border-chalk/10 bg-ink-raised text-xs text-mute"
+        :style="{ height: `${block.height}px` }"
+      >
+        {{ block.label }} block
+      </div>
+    </Teleport>
 
     <p class="type-body mt-10 text-sm text-mute">
       The score never falls back, and it keeps accumulating for as long as the
