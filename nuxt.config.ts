@@ -31,7 +31,7 @@ export default defineNuxtConfig({
       { name: 'Public Sans', provider: 'google', weights: [400, 500] },
       { name: 'IBM Plex Sans', provider: 'google', weights: [400, 500] },
       { name: 'Commissioner', provider: 'google', weights: [400, 500] },
-      { name: 'Golos Text', provider: 'google', weights: [400, 500] },
+      { name: 'Golos Text', provider: 'google', weights: [400, 500, 600, 700, 800] },
       { name: 'Be Vietnam Pro', provider: 'google', weights: [400, 500] },
       { name: 'Karla', provider: 'google', weights: [400, 500] },
       { name: 'Hanken Grotesk', provider: 'google', weights: [400, 500] },

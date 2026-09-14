@@ -61,8 +61,8 @@
   --color-chalk: #f2f5f8;
   --color-mute: #8a949e;
 
-  --font-display: "Unbounded", ui-sans-serif, system-ui, sans-serif;
-  --font-text: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Golos Text", ui-sans-serif, system-ui, sans-serif;
+  --font-text: "Golos Text", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
 
   /* Exponential ease-out: fast commit, long settle. One curve for the system. */
@@ -103,8 +103,8 @@ body {
  * font-family declaration — through the variable alone it finds nothing and
  * silently ships no @font-face at all.
  */
-.font-display { font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif; }
-.font-text { font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; }
+.font-display { font-family: "Golos Text", ui-sans-serif, system-ui, sans-serif; }
+.font-text { font-family: "Golos Text", ui-sans-serif, system-ui, sans-serif; }
 .font-mono { font-family: "Geist Mono", ui-monospace, SFMono-Regular, monospace; }
 
 /* ---------------------------------------------------------------------------
@@ -117,19 +117,19 @@ body {
 @layer components {
   .type-hero {
     font-family: var(--font-display);
-    font-weight: 600;
+    font-weight: 700;
     font-size: clamp(2.75rem, 9vw, 7.5rem);
-    line-height: 0.92;
-    letter-spacing: -0.02em;
+    line-height: 0.9;
+    letter-spacing: -0.035em;
     text-wrap: balance;
   }
 
   .type-section {
     font-family: var(--font-display);
-    font-weight: 600;
+    font-weight: 700;
     font-size: clamp(2rem, 5.2vw, 4rem);
-    line-height: 0.98;
-    letter-spacing: -0.02em;
+    line-height: 0.96;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
 
@@ -138,15 +138,15 @@ body {
     font-weight: 500;
     font-size: clamp(1.125rem, 1.8vw, 1.5rem);
     line-height: 1.15;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
   }
 
   .type-nav {
     font-family: var(--font-display);
-    font-weight: 600;
+    font-weight: 700;
     font-size: clamp(2.25rem, 7vw, 5rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
   }
 
   .type-body {
