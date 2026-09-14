@@ -13,9 +13,11 @@ export default defineNuxtConfig({
     // faces as custom properties inside @theme, which the scanner does not read
     // as font-family declarations, so nothing would be downloaded.
     families: [
-      { name: 'Geist', provider: 'google', weights: [400, 500, 700, 800, 900] },
-      { name: 'Host Grotesk', provider: 'google', weights: [400, 500, 700, 800] },
-      { name: 'Wix Madefor Display', provider: 'google', weights: [400, 500, 700, 800] },
+      { name: 'Epilogue', provider: 'google', weights: [400, 500, 700, 800] },
+      { name: 'Albert Sans', provider: 'google', weights: [400, 500, 700, 800] },
+      { name: 'Newsreader', provider: 'google', weights: [400, 500, 700], styles: ['normal', 'italic'] },
+      { name: 'Urbanist', provider: 'google', weights: [400, 500, 700, 800] },
+      { name: 'Literata', provider: 'google', weights: [400, 500, 700], styles: ['normal', 'italic'] },
       { name: 'Instrument Sans', provider: 'google', weights: [400, 500, 700] },
       { name: 'Geist Mono', provider: 'google', weights: [400, 500] },
     ],

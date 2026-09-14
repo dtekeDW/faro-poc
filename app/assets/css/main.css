@@ -15,10 +15,10 @@
   --color-mute: #8a949e;
 
   /* Defaults are package 1; useTypeSystem rewrites these at runtime. */
-  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Epilogue", ui-sans-serif, system-ui, sans-serif;
   --font-text: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-accent: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Epilogue", ui-sans-serif, system-ui, sans-serif;
 
   /* Exponential ease-out: fast commit, long settle. */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -47,9 +47,11 @@ body {
  * nothing and silently ships no @font-face. These classes are used by the
  * specimen page, so they are not dead weight.
  */
-.fs-geist-sans { font-family: "Geist", ui-sans-serif, sans-serif; }
-.fs-host { font-family: "Host Grotesk", ui-sans-serif, sans-serif; }
-.fs-madefor { font-family: "Wix Madefor Display", ui-sans-serif, sans-serif; }
+.fs-epilogue { font-family: "Epilogue", ui-sans-serif, sans-serif; }
+.fs-albert { font-family: "Albert Sans", ui-sans-serif, sans-serif; }
+.fs-newsreader { font-family: "Newsreader", ui-serif, Georgia, serif; }
+.fs-urbanist { font-family: "Urbanist", ui-sans-serif, sans-serif; }
+.fs-literata { font-family: "Literata", ui-serif, Georgia, serif; }
 .fs-instrument { font-family: "Instrument Sans", ui-sans-serif, sans-serif; }
 .fs-geist { font-family: "Geist Mono", ui-monospace, monospace; }
 

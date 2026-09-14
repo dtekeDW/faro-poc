@@ -6,9 +6,11 @@ useHead({ title: 'Type packages — Sequence' })
 /** Faces are named literally so each specimen renders in its own package,
  *  independent of whatever the runtime switcher has applied to the page. */
 const faceClass: Record<string, { display: string, text: string, mono: string, accent: string }> = {
-  1: { display: 'fs-geist-sans', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-geist-sans' },
-  2: { display: 'fs-host', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-host' },
-  3: { display: 'fs-madefor', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-madefor' },
+  1: { display: 'fs-epilogue', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-epilogue' },
+  2: { display: 'fs-albert', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-albert' },
+  3: { display: 'fs-newsreader', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-newsreader' },
+  4: { display: 'fs-urbanist', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-urbanist' },
+  5: { display: 'fs-literata', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-literata' },
 }
 </script>
 
