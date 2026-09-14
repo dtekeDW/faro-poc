@@ -23,8 +23,8 @@ onMounted(() => {
   <div class="min-h-screen font-display text-chalk antialiased">
     <header class="fixed inset-x-0 top-0 z-50">
       <div
-        class="flex items-center justify-between px-6 py-5 transition-colors duration-700 md:px-10"
-        :class="isOpen ? 'text-ink' : 'text-chalk'"
+        class="flex items-center justify-between px-6 py-5 md:px-10"
+        :class="isOpen ? 'text-ink' : 'text-chalk mix-blend-difference'"
       >
         <NuxtLink
           to="/"

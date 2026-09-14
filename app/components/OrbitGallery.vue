@@ -59,7 +59,11 @@ function configFor(key: keyof typeof reels) {
       life: 0.5,
       persp: 0.2,
     },
-    bgId: 'paper',
+    // The studio export ships 'paper', a cream ground that reads as a bright
+    // slab on this page. Custom lets the canvas take the page ground exactly,
+    // so the frames float instead of sitting in a box.
+    bgId: 'custom',
+    customBg: '#060606',
     radius: 0.02,
     focus: 0.4,
     focusMode: 'vignette',
@@ -157,12 +161,12 @@ onBeforeUnmount(() => instance?.destroy())
       </div>
     </div>
 
-    <div class="mt-14 flex justify-center px-6 md:px-10">
-      <canvas
-        ref="canvas"
-        data-testid="orbit"
-        class="w-full max-w-[900px]"
-      />
-    </div>
+    <!-- Full bleed: with the canvas ground matched to the page, any width cap
+         would read as a framed box rather than as frames floating on the page. -->
+    <canvas
+      ref="canvas"
+      data-testid="orbit"
+      class="mt-14 block w-full"
+    />
   </section>
 </template>
