@@ -10,6 +10,7 @@ interface SeedJob {
 }
 
 const targets = [
+  { id: 'worst', label: 'Worst of each' },
   { id: 'all', label: 'Everything' },
   { id: 'lcp', label: 'LCP' },
   { id: 'cls', label: 'CLS' },
@@ -18,7 +19,7 @@ const targets = [
   { id: 'errors', label: 'Errors' },
 ]
 
-const target = ref('all')
+const target = ref('worst')
 const passes = ref(3)
 const name = ref('')
 

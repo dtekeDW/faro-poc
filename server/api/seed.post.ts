@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   const body: SeedRequest = await readBody<SeedRequest>(event).catch(() => ({}))
   const passes = Math.min(Math.max(Number(body.passes) || 3, 1), 30)
 
-  const allowed = ['all', 'lcp', 'cls', 'inp', 'ttfb', 'errors']
+  const allowed = ['all', 'worst', 'lcp', 'cls', 'inp', 'ttfb', 'errors']
   const target = allowed.includes(body.target ?? '') ? body.target! : 'all'
 
   /*

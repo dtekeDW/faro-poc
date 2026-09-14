@@ -171,9 +171,25 @@ async function main() {
    * question, which is what makes `run=inp-…` a useful dashboard filter rather
    * than just a timestamp.
    */
+  /*
+   * `worst` is the demo run: the single ugliest variant of every category plus
+   * the control, so a full picture of red exists within about a minute rather
+   * than after seventeen steps.
+   */
+  const WORST = new Set([
+    'control',
+    'lcp slow deferred',
+    'ttfb very slow',
+    'cls storm',
+    'inp severe',
+    'errors',
+  ])
+
   const selected = TARGET === 'all'
     ? steps
-    : steps.filter(step => step.target === TARGET || step.target === 'control')
+    : TARGET === 'worst'
+      ? steps.filter(step => WORST.has(step.label))
+      : steps.filter(step => step.target === TARGET || step.target === 'control')
 
   if (!selected.length) {
     console.error(`Unknown target "${TARGET}"`)
