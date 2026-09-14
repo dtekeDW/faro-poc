@@ -15,6 +15,13 @@ export interface Scenario {
   // Shown in the lab and as the dashboard row label.
   label: string
 
+  /**
+   * One word for the menu. At that size a sentence wraps and the list stops
+   * scanning; the metric beside it already says which measurement is at stake,
+   * so the label only has to name the symptom.
+   */
+  menuLabel: string
+
   /** The metric this scenario is built to ruin. */
   metric: 'LCP' | 'CLS' | 'INP' | 'TTFB' | 'Errors' | 'none'
 
@@ -34,6 +41,7 @@ export interface Scenario {
 export const SCENARIOS: Scenario[] = [
   {
     id: 'healthy',
+    menuLabel: 'Reference',
     label: 'Reference',
     metric: 'none',
     cause: 'Nothing is wrong. Images are sized and prioritised, handlers are cheap, the server answers immediately.',
@@ -43,6 +51,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: 'lcp',
+    menuLabel: 'Paint',
     label: 'Slow hero image',
     metric: 'LCP',
     cause: 'The hero ships a 2400px original, loads it lazily and gives the browser no priority hint.',
@@ -52,6 +61,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: 'cls',
+    menuLabel: 'Shift',
     label: 'Images without dimensions',
     metric: 'CLS',
     cause: 'Content without width and height arrives after the page has settled, so everything below it jumps.',
@@ -61,6 +71,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: 'inp',
+    menuLabel: 'Response',
     label: 'Blocking interaction',
     metric: 'INP',
     cause: 'The format filter does 320ms of work on the main thread before the click can paint.',
@@ -70,6 +81,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: 'ttfb',
+    menuLabel: 'Waiting',
     label: 'Slow server response',
     metric: 'TTFB',
     cause: 'The server holds the response for 900ms before sending the first byte.',
@@ -79,6 +91,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: 'errors',
+    menuLabel: 'Breakage',
     label: 'Broken scripts',
     metric: 'Errors',
     cause: 'A handler throws on load and a background request fails against a host that does not answer.',

@@ -159,7 +159,7 @@ both failures are worth showing.
 
 **LCP is not about file size.** The first version served a 2400px original and
 still scored green: a large image arrives from a nearby server in milliseconds.
-What fails the metric is *late bytes* — a slow origin, an uncached CDN miss, a
+What fails the metric is _late bytes_ — a slow origin, an uncached CDN miss, a
 hero behind a redirect. The lab now serves its image through an endpoint that
 holds the response, and only the delayed variants turn red. Measured: 0.19s
 direct against 2.70s delayed.

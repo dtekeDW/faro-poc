@@ -6,14 +6,13 @@ const { isOpen, toggle, close } = useMenu()
  * for it: this is a demonstration surface, and the thing a viewer needs to move
  * between is the defects, with the metric each one ruins named right there.
  */
-const links = computed(() => [
-  { label: 'Lab', to: '/lab', meta: 'run all' },
-  ...SCENARIOS.map(scenario => ({
-    label: scenario.label,
+const links = computed(() =>
+  SCENARIOS.map(scenario => ({
+    label: scenario.menuLabel,
     to: scenario.id === 'healthy' ? '/' : `/${scenario.id}`,
     meta: scenario.metric === 'none' ? 'control' : scenario.metric,
   })),
-])
+)
 
 function onKey(event: KeyboardEvent) {
   if (event.key === 'Escape')
@@ -91,7 +90,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         </li>
       </ul>
 
-      <div class="mt-10 flex flex-wrap gap-x-12 gap-y-3 text-sm text-ink/70">
+      <!-- The lab is a different kind of destination from the scenarios, so it
+           sits with the utilities rather than competing in the same list. -->
+      <div class="mt-10 flex flex-wrap items-baseline gap-x-12 gap-y-3 text-sm text-ink/70">
+        <NuxtLink to="/lab" class="link-wipe font-medium text-ink" @click="close()">
+          Metrics lab
+        </NuxtLink>
         <a href="mailto:hello@sequence.com" class="hover:text-ink">hello@sequence.com</a>
         <span class="type-data">(217) 555-0134</span>
         <span>123 Main Street, Austin TX</span>
