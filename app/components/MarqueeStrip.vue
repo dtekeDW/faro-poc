@@ -28,6 +28,8 @@ const facts = ['New York', 'Est. 2015', '120+ brands', 'Award winning', '8 years
 
 <style>
 @keyframes marquee {
-  to { transform: translateX(-50%); }
+  to {
+    transform: translateX(-50%);
+  }
 }
 </style>

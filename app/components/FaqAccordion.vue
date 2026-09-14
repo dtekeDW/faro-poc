@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger } from 'reka-ui'
 import { Plus } from 'lucide-vue-next'
+import { AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger } from 'reka-ui'
 
 const { isDegraded } = defineProps<{ isDegraded: boolean }>()
 

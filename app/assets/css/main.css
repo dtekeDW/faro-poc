@@ -1,7 +1,4 @@
-@import "tailwindcss";
-
-
-
+@import 'tailwindcss';
 
 /* ---------------------------------------------------------------------------
  * Design tokens
@@ -25,9 +22,9 @@
   --color-chalk: #f2f5f8;
   --color-mute: #8a949e;
 
-  --font-display: "Golos Text", ui-sans-serif, system-ui, sans-serif;
-  --font-text: "Figtree", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: 'Golos Text', ui-sans-serif, system-ui, sans-serif;
+  --font-text: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
 
   /* Exponential ease-out: fast commit, long settle. One curve for the system. */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -67,9 +64,15 @@ body {
  * font-family declaration — through the variable alone it finds nothing and
  * silently ships no @font-face at all.
  */
-.font-display { font-family: "Golos Text", ui-sans-serif, system-ui, sans-serif; }
-.font-text { font-family: "Figtree", ui-sans-serif, system-ui, sans-serif; }
-.font-mono { font-family: "Geist Mono", ui-monospace, SFMono-Regular, monospace; }
+.font-display {
+  font-family: 'Golos Text', ui-sans-serif, system-ui, sans-serif;
+}
+.font-text {
+  font-family: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+}
+.font-mono {
+  font-family: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+}
 
 /* ---------------------------------------------------------------------------
  * Type scale
@@ -137,7 +140,7 @@ body {
   .type-data {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum";
+    font-feature-settings: 'tnum';
   }
 
   /* ---- Layout primitives ---- */
@@ -191,16 +194,17 @@ body {
     border: 1px solid color-mix(in oklab, var(--color-chalk) 20%, transparent);
     padding: 0.5rem 1.25rem;
     font-size: 0.875rem;
-    transition: border-color var(--duration-quick) var(--ease-out-expo),
-                background-color var(--duration-quick) var(--ease-out-expo),
-                color var(--duration-quick) var(--ease-out-expo);
+    transition:
+      border-color var(--duration-quick) var(--ease-out-expo),
+      background-color var(--duration-quick) var(--ease-out-expo),
+      color var(--duration-quick) var(--ease-out-expo);
   }
 
   .pill:hover {
     border-color: color-mix(in oklab, var(--color-chalk) 50%, transparent);
   }
 
-  .pill[data-active="true"] {
+  .pill[data-active='true'] {
     border-color: var(--color-dodger);
     background-color: var(--color-dodger);
     color: var(--color-ink);
@@ -212,7 +216,7 @@ body {
   }
 
   .link-wipe::after {
-    content: "";
+    content: '';
     position: absolute;
     inset-inline: 0;
     bottom: -0.25rem;
@@ -255,15 +259,21 @@ body {
   color: var(--color-ink);
 }
 
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 ::-webkit-scrollbar-thumb {
   background: color-mix(in oklab, var(--color-dodger) 45%, transparent);
   border-radius: 999px;
 }
 
-::-webkit-scrollbar-thumb:hover { background: var(--color-dodger); }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dodger);
+}
 
 :focus-visible {
   outline: 2px solid var(--color-dodger);

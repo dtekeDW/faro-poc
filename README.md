@@ -26,13 +26,13 @@ every beacon is rejected by CORS.
 
 Append `?degrade=<modules>` to any route, comma separated, or `?degrade=all`.
 
-| Module | Induced defect | Metric |
-| --- | --- | --- |
-| `hero` | 2400px hero, lazy, no fetchpriority | LCP |
+| Module    | Induced defect                         | Metric    |
+| --------- | -------------------------------------- | --------- |
+| `hero`    | 2400px hero, lazy, no fetchpriority    | LCP       |
 | `gallery` | oversized tiles, quadratic filter pass | LCP / INP |
-| `logos` | logos without width/height, delayed | CLS |
-| `filter` | 320ms block inside the click handler | INP |
-| `faq` | forced layout thrashing on toggle | INP |
+| `logos`   | logos without width/height, delayed    | CLS       |
+| `filter`  | 320ms block inside the click handler   | INP       |
+| `faq`     | forced layout thrashing on toggle      | INP       |
 
 The active variant is attached to every Faro beacon as a session attribute,
 which is what lets a dashboard panel compare the two runs of one module.

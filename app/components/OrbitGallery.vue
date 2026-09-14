@@ -114,9 +114,10 @@ function mount() {
 function selectFormat(format: keyof typeof reels) {
   if (isDegraded) {
     let sink = 0
-    for (let i = 0; i < 40; i++)
+    for (let i = 0; i < 40; i++) {
       for (let j = 0; j < 90_000; j++)
         sink += (i * j) % 7
+    }
     void sink
   }
 

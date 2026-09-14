@@ -19,7 +19,7 @@ export default defineNuxtPlugin({
   // Run before other plugins so errors thrown during their setup are captured.
   enforce: 'pre',
 
-  setup(nuxtApp) {
+  setup() {
     const { faro: config } = useRuntimeConfig().public
 
     if (!config.url) {
@@ -64,6 +64,8 @@ export default defineNuxtPlugin({
       faro.api.setView({ name: to.name?.toString() ?? to.path })
     })
 
-    nuxtApp.provide('faro', faro)
+    // Returned rather than passed to nuxtApp.provide(): only this form carries
+    // the type through to `useNuxtApp().$faro` at the call sites.
+    return { provide: { faro } }
   },
 })

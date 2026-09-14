@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LogoLoop } from './ui/logo-loop'
+import LogoLoop from './ui/logo-loop/LogoLoop.vue'
 
 const { isDegraded } = defineProps<{ isDegraded: boolean }>()
 

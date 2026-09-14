@@ -98,8 +98,14 @@ onMounted(() => {
 }
 
 @keyframes per-character-rise {
-  from { opacity: 0; transform: translateY(32px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* The original renders instantly with no animation at all. */

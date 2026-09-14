@@ -6,18 +6,18 @@ class names and never restate a value.
 
 ## Type
 
-| Role | Face | Used for |
-| --- | --- | --- |
-| Display | **Golos Text** | Anything meant to be *looked at* — hero, section heads, nav |
-| Text | **Figtree** | Anything meant to be *read* — body, labels, controls |
-| Data | **Geist Mono** | Anything meant to be *compared* — counts, durations, timecodes |
+| Role    | Face           | Used for                                                       |
+| ------- | -------------- | -------------------------------------------------------------- |
+| Display | **Golos Text** | Anything meant to be _looked at_ — hero, section heads, nav    |
+| Text    | **Figtree**    | Anything meant to be _read_ — body, labels, controls           |
+| Data    | **Geist Mono** | Anything meant to be _compared_ — counts, durations, timecodes |
 
 Golos is broad and grounded rather than geometric, so it takes tight tracking
 well and needs weight 700 to hold a hero — at 600 it goes soft at display size.
 Figtree sits under it with a softer, rounder construction and a high x-height,
 which keeps body copy fast to read without competing with the headline.
 
-The pairing works because the two differ in *construction*, not in width. Two
+The pairing works because the two differ in _construction_, not in width. Two
 faces of the same build would read as an accident rather than a decision.
 
 Numbers use `type-data`, which sets tabular figures. Comparing a column of
@@ -25,29 +25,29 @@ proportional numerals is guesswork.
 
 ### Scale
 
-| Class | Size | Leading | Tracking |
-| --- | --- | --- | --- |
-| `type-hero` | `clamp(3rem, 10.5vw, 9.5rem)` | 0.90 | −0.035em |
-| `type-section` | `clamp(2.25rem, 6.8vw, 5.75rem)` | 0.96 | −0.03em |
-| `type-nav` | `clamp(2.5rem, 7.5vw, 5.5rem)` | 1.02 | −0.03em |
-| `type-title` | `clamp(1.125rem, 1.8vw, 1.5rem)` | 1.15 | −0.015em |
-| `type-body` | 0.9375rem, capped at 68ch | 1.65 | — |
-| `type-small` | 0.875rem | 1.5 | — |
-| `type-micro` | 0.6875rem, uppercase | 1.4 | +0.36em |
+| Class          | Size                             | Leading | Tracking |
+| -------------- | -------------------------------- | ------- | -------- |
+| `type-hero`    | `clamp(3rem, 10.5vw, 9.5rem)`    | 0.90    | −0.035em |
+| `type-section` | `clamp(2.25rem, 6.8vw, 5.75rem)` | 0.96    | −0.03em  |
+| `type-nav`     | `clamp(2.5rem, 7.5vw, 5.5rem)`   | 1.02    | −0.03em  |
+| `type-title`   | `clamp(1.125rem, 1.8vw, 1.5rem)` | 1.15    | −0.015em |
+| `type-body`    | 0.9375rem, capped at 68ch        | 1.65    | —        |
+| `type-small`   | 0.875rem                         | 1.5     | —        |
+| `type-micro`   | 0.6875rem, uppercase             | 1.4     | +0.36em  |
 
 `type-micro` is the only positive tracking in the system. It is legible only
 because it is short and uppercase; it must never carry a sentence.
 
 ## Colour
 
-| Token | Value | Role |
-| --- | --- | --- |
-| `--color-ink` | `#060606` | Page ground |
-| `--color-ink-raised` | `#0e1013` | Surfaces that sit above the ground |
-| `--color-dodger` | `#1095fb` | The only hue. Active state, link, menu ground |
-| `--color-dodger-deep` | `#0a6cb8` | Pressed and deep accents |
-| `--color-chalk` | `#f2f5f8` | Primary foreground |
-| `--color-mute` | `#8a949e` | Secondary foreground |
+| Token                 | Value     | Role                                          |
+| --------------------- | --------- | --------------------------------------------- |
+| `--color-ink`         | `#060606` | Page ground                                   |
+| `--color-ink-raised`  | `#0e1013` | Surfaces that sit above the ground            |
+| `--color-dodger`      | `#1095fb` | The only hue. Active state, link, menu ground |
+| `--color-dodger-deep` | `#0a6cb8` | Pressed and deep accents                      |
+| `--color-chalk`       | `#f2f5f8` | Primary foreground                            |
+| `--color-mute`        | `#8a949e` | Secondary foreground                          |
 
 Measured contrast on ink: chalk **18.5:1**, mute **6.6:1**, dodger **6.5:1**.
 Ink on dodger is also **6.5:1**, which is what makes the inverted menu legible
@@ -65,11 +65,11 @@ each section animating its own background.
 One curve: `--ease-out-expo` (`cubic-bezier(0.16, 1, 0.3, 1)`) — fast commit,
 long settle. Its mirror `--ease-in-expo` is used only for exits.
 
-| Token | Value | Used for |
-| --- | --- | --- |
-| `--duration-quick` | 300ms | Colour and border changes |
+| Token               | Value | Used for                          |
+| ------------------- | ----- | --------------------------------- |
+| `--duration-quick`  | 300ms | Colour and border changes         |
 | `--duration-settle` | 600ms | Ground inversion, underline wipes |
-| `--duration-stage` | 900ms | The menu panel reveal |
+| `--duration-stage`  | 900ms | The menu panel reveal             |
 
 Two text entrances, both ports of smoothui components with their values
 carried over unchanged:
@@ -81,7 +81,7 @@ carried over unchanged:
   on two lines only: the hero and the pull quote.
 - **`PerCharacterRise`** — letters from `opacity 0` and `y 32` on
   `cubic-bezier(0.2, 0.8, 0.2, 1)`, 0.7s, 24ms stagger. Its own documentation
-  says *best on 40px+ headlines*, so it carries the section headings and one
+  says _best on 40px+ headlines_, so it carries the section headings and one
   short label, never body copy. Characters are grouped per word so a line break
   cannot fall inside a word — the original allows that, and the headings here
   run to three lines.
@@ -91,13 +91,13 @@ carried over unchanged:
 One choreographed entrance, not four independent ones. Each delay begins where
 the previous move has visibly settled:
 
-| At | What |
-| --- | --- |
-| 140ms | Headline resolves from blur, over 1450ms |
+| At     | What                                         |
+| ------ | -------------------------------------------- |
+| 140ms  | Headline resolves from blur, over 1450ms     |
 | 1150ms | Rule draws itself left to right, over 1100ms |
-| 1500ms | Lede resolves from `blur(6px)`, over 1200ms |
-| 1950ms | Call to action drifts up, over 800ms |
-| 2050ms | “Play showreel” rises per character |
+| 1500ms | Lede resolves from `blur(6px)`, over 1200ms  |
+| 1950ms | Call to action drifts up, over 800ms         |
+| 2050ms | “Play showreel” rises per character          |
 
 The lede resolves rather than merely fading — a quieter member of the headline's
 family, so the two read as one idea at two volumes. It and the call to action
@@ -114,11 +114,11 @@ is a state change.
 `--space-section` (7rem, 10rem from 768px) and `--space-gutter` (1.5rem,
 2.5rem) are the base rhythm values. Three primitives apply them:
 
-| Class | Block padding | Used for |
-| --- | --- | --- |
-| `.section-tight` | 0.5× | Supporting bands — stats, client wall |
-| `.section` | 1× | Default |
-| `.section-loose` | 1.6× | Sections that need a pause around them — works, playground, questions |
+| Class            | Block padding | Used for                                                              |
+| ---------------- | ------------- | --------------------------------------------------------------------- |
+| `.section-tight` | 0.5×          | Supporting bands — stats, client wall                                 |
+| `.section`       | 1×            | Default                                                               |
+| `.section-loose` | 1.6×          | Sections that need a pause around them — works, playground, questions |
 
 A page where every band carries the same padding reads as evenly important
 throughout, which is the same as reading as unimportant. The cadence across the

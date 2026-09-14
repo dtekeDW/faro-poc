@@ -18,12 +18,20 @@
 
       <dl class="grid gap-y-2 text-sm text-mute">
         <div class="flex gap-4">
-          <dt class="w-16 shrink-0">Phone</dt>
-          <dd class="type-data text-chalk">(217) 555-0134</dd>
+          <dt class="w-16 shrink-0">
+            Phone
+          </dt>
+          <dd class="type-data text-chalk">
+            (217) 555-0134
+          </dd>
         </div>
         <div class="flex gap-4">
-          <dt class="w-16 shrink-0">Studio</dt>
-          <dd class="text-chalk">123 Main Street, Austin TX</dd>
+          <dt class="w-16 shrink-0">
+            Studio
+          </dt>
+          <dd class="text-chalk">
+            123 Main Street, Austin TX
+          </dd>
         </div>
       </dl>
     </div>
