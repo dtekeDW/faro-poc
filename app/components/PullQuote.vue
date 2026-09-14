@@ -7,7 +7,7 @@
   <section class="section-loose text-center">
     <figure class="mx-auto max-w-6xl">
       <blockquote class="type-hero mx-auto max-w-[13ch]">
-        They said it better
+        <FocusBlurResolve text="They said it better" trigger-on-view />
       </blockquote>
 
       <p class="mx-auto mt-16 max-w-[38ch] text-xl leading-[1.5] text-mute md:text-2xl">

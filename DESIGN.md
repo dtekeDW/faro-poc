@@ -71,7 +71,14 @@ long settle. Its mirror `--ease-in-expo` is used only for exits.
 | `--duration-settle` | 600ms | Ground inversion, underline wipes |
 | `--duration-stage` | 900ms | The menu panel reveal |
 
-The menu is the single authored moment: the panel clips down while the ground
+Headlines enter with `FocusBlurResolve` — a port of smoothui's
+`focus-blur-resolve`, carried over value for value: 0.76s on
+`cubic-bezier(0.22, 1, 0.36, 1)`, from `blur(14px)`, `opacity 0`,
+`translateY(14px)` and `scale(1.01)` to resolved. It is deliberately used on
+two lines only, the hero and the pull quote. The same entrance on every heading
+stops being a moment and becomes a tic.
+
+The menu is the other authored moment: the panel clips down while the ground
 inverts underneath it, as one gesture rather than two effects. Everything else
 is a state change.
 

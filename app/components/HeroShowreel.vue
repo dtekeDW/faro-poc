@@ -31,7 +31,7 @@ const src = computed(() =>
 
     <div class="relative mt-auto px-6 pb-8 md:px-10">
       <h1 class="max-w-[16ch] type-hero">
-        We make videos people remember
+        <FocusBlurResolve text="We make videos people remember" :delay="120" />
       </h1>
 
       <div class="mt-8 flex flex-wrap items-end justify-between gap-6 border-t border-chalk/15 pt-5">
