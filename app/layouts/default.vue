@@ -9,14 +9,13 @@ const links = [
   { label: 'Contact', to: '#contact', meta: null },
 ]
 
-onMounted(() => {
-  const onKey = (event: KeyboardEvent) => {
-    if (event.key === 'Escape')
-      close()
-  }
-  window.addEventListener('keydown', onKey)
-  onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
-})
+function onKey(event: KeyboardEvent) {
+  if (event.key === 'Escape')
+    close()
+}
+
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <template>
@@ -56,48 +55,42 @@ onMounted(() => {
     </header>
 
     <!--
-      The panel clips down from the top edge rather than fading: the ground is
-      already inverting underneath, and a second opacity animation on top of
-      that reads as two unrelated effects instead of one gesture.
+      The panel stays mounted and animates its clip-path. Toggling it with v-if
+      inside a Transition makes SSR emit nothing where the client expects a
+      comment anchor, which is a hydration mismatch, and it would rebuild the
+      whole list on every open.
     -->
-    <Transition
-      enter-active-class="transition-[clip-path] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
-      enter-from-class="[clip-path:inset(0_0_100%_0)]"
-      enter-to-class="[clip-path:inset(0_0_0_0)]"
-      leave-active-class="transition-[clip-path] duration-[600ms] ease-[cubic-bezier(0.7,0,0.84,0)]"
-      leave-from-class="[clip-path:inset(0_0_0_0)]"
-      leave-to-class="[clip-path:inset(0_0_100%_0)]"
+    <nav
+      id="site-menu"
+      :inert="!isOpen"
+      :aria-hidden="!isOpen"
+      class="fixed inset-0 z-40 flex flex-col justify-end bg-dodger px-6 pb-10 pt-24 text-ink transition-[clip-path] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:px-10"
+      :class="isOpen ? '[clip-path:inset(0_0_0_0)]' : 'pointer-events-none [clip-path:inset(0_0_100%_0)]'"
     >
-      <nav
-        v-if="isOpen"
-        id="site-menu"
-        class="fixed inset-0 z-40 flex flex-col justify-end bg-dodger px-6 pb-10 pt-24 text-ink md:px-10"
-      >
-        <ul class="border-t border-ink/15">
-          <li v-for="(link, index) in links" :key="link.label">
-            <a
-              :href="link.to"
-              class="group flex items-baseline justify-between gap-6 border-b border-ink/15 py-4 transition-opacity duration-300 hover:opacity-55 md:py-5"
-              :style="{ transitionDelay: `${index * 40}ms` }"
-              @click="close()"
-            >
-              <span class="text-[13vw] font-extrabold leading-[0.82] tracking-[-0.05em] md:text-[7vw]">
-                {{ link.label }}
-              </span>
-              <span v-if="link.meta" class="tnum shrink-0 font-accent text-base italic md:text-xl">
-                {{ link.meta }}
-              </span>
-            </a>
-          </li>
-        </ul>
+      <ul class="border-t border-ink/15">
+        <li v-for="(link, index) in links" :key="link.label">
+          <a
+            :href="link.to"
+            class="group flex items-baseline justify-between gap-6 border-b border-ink/15 py-4 transition-opacity duration-300 hover:opacity-55 md:py-5"
+            :style="{ transitionDelay: `${index * 40}ms` }"
+            @click="close()"
+          >
+            <span class="text-[13vw] font-extrabold leading-[0.82] tracking-[-0.05em] md:text-[7vw]">
+              {{ link.label }}
+            </span>
+            <span v-if="link.meta" class="tnum shrink-0 font-accent text-base italic md:text-xl">
+              {{ link.meta }}
+            </span>
+          </a>
+        </li>
+      </ul>
 
-        <div class="mt-10 flex flex-wrap gap-x-12 gap-y-3 text-sm text-ink/70">
-          <a href="mailto:hello@sequence.com" class="hover:text-ink">hello@sequence.com</a>
-          <span class="tnum">(217) 555-0134</span>
-          <span>123 Main Street, Austin TX</span>
-        </div>
-      </nav>
-    </Transition>
+      <div class="mt-10 flex flex-wrap gap-x-12 gap-y-3 text-sm text-ink/70">
+        <a href="mailto:hello@sequence.com" class="hover:text-ink">hello@sequence.com</a>
+        <span class="tnum">(217) 555-0134</span>
+        <span>123 Main Street, Austin TX</span>
+      </div>
+    </nav>
 
     <main>
       <slot />

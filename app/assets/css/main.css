@@ -27,6 +27,20 @@
   --ground: var(--color-ink);
 }
 
+/*
+ * Literal family names, not var(--font-*). Tailwind v4 compiles its font
+ * utilities down to var() references, and @nuxt/fonts only downloads a face it
+ * can see named in a font-family declaration — through the variable alone it
+ * finds nothing and silently ships no @font-face at all.
+ */
+body {
+  font-family: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-accent {
+  font-family: "Instrument Serif", ui-serif, Georgia, serif;
+}
+
 html {
   background-color: var(--ground);
   transition: background-color 700ms var(--ease-out-expo);

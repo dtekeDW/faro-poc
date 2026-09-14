@@ -4,7 +4,23 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-09-01',
   devtools: { enabled: false },
 
+  modules: ['@nuxt/fonts'],
+
   css: ['~/assets/css/main.css'],
+
+  fonts: {
+    // Declared explicitly rather than left to scanning: Tailwind v4 exposes the
+    // faces as custom properties inside @theme, which the scanner does not read
+    // as font-family declarations, so nothing would be downloaded.
+    families: [
+      { name: 'Inter Tight', provider: 'google', weights: [400, 500, 700, 800] },
+      { name: 'Instrument Serif', provider: 'google', weights: [400], styles: ['normal', 'italic'] },
+    ],
+    defaults: {
+      weights: [400, 500, 700, 800],
+      styles: ['normal', 'italic'],
+    },
+  },
 
   vite: {
     plugins: [tailwindcss()],
@@ -25,14 +41,6 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en' },
       title: 'Sequence — Video Production',
-      link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Instrument+Serif:ital@0;1&display=swap',
-        },
-      ],
     },
   },
 })
