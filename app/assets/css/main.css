@@ -1,6 +1,24 @@
 @import "tailwindcss";
 
 
+/* Headline candidates for the specimen wall at /fonts. */
+.fs-clash { font-family: "Clash Display", ui-sans-serif, sans-serif; }
+.fs-cabinet { font-family: "Cabinet Grotesk", ui-sans-serif, sans-serif; }
+.fs-unbounded { font-family: "Unbounded", ui-sans-serif, sans-serif; }
+.fs-league { font-family: "League Spartan", ui-sans-serif, sans-serif; }
+.fs-supreme { font-family: "Supreme", ui-sans-serif, sans-serif; }
+.fs-general { font-family: "General Sans", ui-sans-serif, sans-serif; }
+.fs-switzer { font-family: "Switzer", ui-sans-serif, sans-serif; }
+.fs-chillax { font-family: "Chillax", ui-sans-serif, sans-serif; }
+.fs-onest { font-family: "Onest", ui-sans-serif, sans-serif; }
+.fs-golos { font-family: "Golos Text", ui-sans-serif, sans-serif; }
+.fs-hanken { font-family: "Hanken Grotesk", ui-sans-serif, sans-serif; }
+.fs-commissioner { font-family: "Commissioner", ui-sans-serif, sans-serif; }
+.fs-redhat { font-family: "Red Hat Display", ui-sans-serif, sans-serif; }
+.fs-figtree { font-family: "Figtree", ui-sans-serif, sans-serif; }
+.fs-archivo { font-family: "Archivo", ui-sans-serif, sans-serif; }
+.fs-darker { font-family: "Darker Grotesque", ui-sans-serif, sans-serif; }
+
 /* Secondary-text candidates for the specimen wall at /text. */
 .ts-switzer { font-family: "Switzer", ui-sans-serif, sans-serif; }
 .ts-general { font-family: "General Sans", ui-sans-serif, sans-serif; }
@@ -98,7 +116,7 @@ body {
  * ------------------------------------------------------------------------ */
 @layer components {
   .type-hero {
-    font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: clamp(2.75rem, 9vw, 7.5rem);
     line-height: 0.92;
@@ -107,7 +125,7 @@ body {
   }
 
   .type-section {
-    font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: clamp(2rem, 5.2vw, 4rem);
     line-height: 0.98;
@@ -116,7 +134,7 @@ body {
   }
 
   .type-title {
-    font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-display);
     font-weight: 500;
     font-size: clamp(1.125rem, 1.8vw, 1.5rem);
     line-height: 1.15;
@@ -124,7 +142,7 @@ body {
   }
 
   .type-nav {
-    font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: clamp(2.25rem, 7vw, 5rem);
     line-height: 1.05;
@@ -153,7 +171,7 @@ body {
 
   /* Numbers meant to be compared, never merely read. */
   .type-data {
-    font-family: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
   }

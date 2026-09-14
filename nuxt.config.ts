@@ -13,6 +13,14 @@ export default defineNuxtConfig({
     // faces as custom properties inside @theme, which the scanner does not read
     // as font-family declarations, so nothing would be downloaded.
     families: [
+      // Headline candidates for the specimen wall at /fonts.
+      { name: 'Clash Display', provider: 'fontshare', weights: [600] },
+      { name: 'Cabinet Grotesk', provider: 'fontshare', weights: [700] },
+      { name: 'League Spartan', provider: 'google', weights: [700] },
+      { name: 'Darker Grotesque', provider: 'google', weights: [700] },
+      { name: 'Archivo', provider: 'google', weights: [700] },
+      { name: 'Red Hat Display', provider: 'google', weights: [700] },
+      { name: 'Chillax', provider: 'fontshare', weights: [600] },
       // Secondary-text candidates for the specimen wall at /text.
       { name: 'Switzer', provider: 'fontshare', weights: [400, 500] },
       { name: 'General Sans', provider: 'fontshare', weights: [400, 500] },
