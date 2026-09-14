@@ -19,7 +19,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section id="clients" class="section">
+  <section id="clients" class="section-tight">
     <p class="type-body max-w-[46ch] text-mute">
       Every logo here represents a creative partnership, a shared vision, and a
       project we are glad to put our name on.

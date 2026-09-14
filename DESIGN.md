@@ -80,8 +80,18 @@ is a state change.
 ## Layout
 
 `--space-section` (6rem, 8rem from 768px) and `--space-gutter` (1.5rem,
-2.5rem) are the only rhythm values. The `.section` primitive applies both, so
-a section never states its own padding.
+2.5rem) are the base rhythm values. Three primitives apply them:
+
+| Class | Block padding | Used for |
+| --- | --- | --- |
+| `.section-tight` | 0.5× | Supporting bands — stats, client wall |
+| `.section` | 1× | Default |
+| `.section-loose` | 1.6× | Sections that need a pause around them — works, playground, questions |
+
+A page where every band carries the same padding reads as evenly important
+throughout, which is the same as reading as unimportant. The cadence across the
+homepage is deliberately uneven: full-bleed, loose, default, loose, full-bleed,
+tight, tight, loose.
 
 `.rule` is the single hairline: `chalk` at 10% opacity.
 

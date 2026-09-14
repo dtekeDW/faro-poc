@@ -19,9 +19,10 @@ watchEffect(() => {
     <MarqueeStrip />
     <FeaturedWorks />
     <OrbitGallery :is-degraded="degradations.gallery" />
+    <CategoryFilter :is-degraded="degradations.filter" />
+    <PullQuote />
     <StatsCounter />
     <LogoWall :is-degraded="degradations.logos" />
-    <CategoryFilter :is-degraded="degradations.filter" />
     <FaqAccordion :is-degraded="degradations.faq" />
   </div>
 </template>

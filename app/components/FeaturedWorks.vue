@@ -8,7 +8,7 @@ const projects = [
 </script>
 
 <template>
-  <section id="works" class="section">
+  <section id="works" class="section-loose">
     <h2 class="max-w-[14ch] type-section">
       A few projects we're proud of
     </h2>
@@ -17,18 +17,18 @@ const projects = [
       Deliberately uneven: two large slots and two small ones, so the grid
       reads as an edit rather than as a row of equal cards.
     -->
-    <div class="mt-14 grid gap-x-6 gap-y-14 md:grid-cols-12">
+    <div class="mt-20 grid gap-x-8 gap-y-24 md:grid-cols-12">
       <article
         v-for="project in projects"
         :key="project.title"
         class="group photo-reveal"
-        :class="project.scale === 'lg' ? 'md:col-span-7' : 'md:col-span-5 md:self-end'"
+        :class="project.scale === 'lg' ? 'md:col-span-8' : 'md:col-span-4 md:self-end'"
       >
         <div class="overflow-hidden bg-ink-raised">
           <img
-            :src="photo(project.image, 1200, project.scale === 'lg' ? 750 : 900)"
-            :width="1200"
-            :height="project.scale === 'lg' ? 750 : 900"
+            :src="photo(project.image, 1600, project.scale === 'lg' ? 1000 : 1200)"
+            :width="1600"
+            :height="project.scale === 'lg' ? 1000 : 1200"
             loading="lazy"
             decoding="async"
             :alt="project.title"
@@ -36,7 +36,7 @@ const projects = [
           >
         </div>
 
-        <div class="mt-5 flex items-baseline justify-between gap-6 border-t border-chalk/12 pt-4">
+        <div class="mt-6 flex items-baseline justify-between gap-6 border-t border-chalk/12 pt-5">
           <h3 class="type-title">
             {{ project.title }}
           </h3>

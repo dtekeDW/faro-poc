@@ -142,9 +142,25 @@ body {
 
   /* ---- Layout primitives ---- */
 
+  /*
+   * Three section weights, not one. A page where every band carries the same
+   * padding reads as evenly important throughout, which is the same as reading
+   * as unimportant. Tight bands press against their neighbours; loose bands
+   * earn a pause before and after.
+   */
   .section {
     padding-inline: var(--space-gutter);
     padding-block: var(--space-section);
+  }
+
+  .section-tight {
+    padding-inline: var(--space-gutter);
+    padding-block: calc(var(--space-section) * 0.5);
+  }
+
+  .section-loose {
+    padding-inline: var(--space-gutter);
+    padding-block: calc(var(--space-section) * 1.6);
   }
 
   .rule {
@@ -217,6 +233,16 @@ body {
   .section {
     padding-inline: var(--space-gutter-lg);
     padding-block: var(--space-section-lg);
+  }
+
+  .section-tight {
+    padding-inline: var(--space-gutter-lg);
+    padding-block: calc(var(--space-section-lg) * 0.5);
+  }
+
+  .section-loose {
+    padding-inline: var(--space-gutter-lg);
+    padding-block: calc(var(--space-section-lg) * 1.6);
   }
 }
 

@@ -44,12 +44,14 @@ function onToggle() {
 </script>
 
 <template>
-  <section id="questions" class="border-t border-chalk/10 section">
-    <h2 class="max-w-[14ch] type-section">
+  <!-- Centred and wide: the closing section answers objections, and a narrow
+       left column makes that read as a footnote rather than a conclusion. -->
+  <section id="questions" class="rule section-loose">
+    <h2 class="type-section mx-auto max-w-[16ch] text-center">
       The questions before the cameras roll
     </h2>
 
-    <AccordionRoot v-model="open" type="multiple" data-testid="faq" class="mt-14 max-w-[70ch]">
+    <AccordionRoot v-model="open" type="multiple" data-testid="faq" class="mx-auto mt-16 w-full max-w-5xl">
       <AccordionItem
         v-for="item in questions"
         :key="item.q"
@@ -59,15 +61,15 @@ function onToggle() {
       >
         <AccordionHeader>
           <AccordionTrigger
-            class="group flex w-full items-center justify-between gap-6 cursor-pointer py-6 text-left text-lg transition-colors duration-300 hover:text-dodger"
+            class="group flex w-full items-center justify-between gap-6 type-title cursor-pointer py-8 text-left transition-colors duration-300 hover:text-dodger"
             @click="onToggle"
           >
             {{ item.q }}
-            <Plus class="size-5 shrink-0 transition group-data-[state=open]:rotate-45" />
+            <Plus class="size-6 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-data-[state=open]:rotate-45" />
           </AccordionTrigger>
         </AccordionHeader>
 
-        <AccordionContent class="type-body overflow-hidden pb-6 text-mute">
+        <AccordionContent class="type-body overflow-hidden pb-8 text-mute">
           {{ item.a }}
         </AccordionContent>
       </AccordionItem>

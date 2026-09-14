@@ -26,6 +26,21 @@ export const REEL_IMAGES: Record<string, readonly number[]> = {
   busan: [16, 46, 58, 68, 69],
 }
 
+/** One frame per capability, shown large beside the format it belongs to. */
+export const CAPABILITY_IMAGES: Record<string, number> = {
+  'Social Media': 64,
+  'Brand Film': 57,
+  'Product': 78,
+  'UGC': 65,
+  'Documentary': 27,
+  'Corporate': 42,
+  'Commercial': 74,
+  'Event': 61,
+}
+
+/** The pull quote sits over this one. */
+export const QUOTE_IMAGE = 44
+
 /** Texture crops. Shown small, desaturated and dim, so subject matters least. */
 export const CLIENT_IMAGES = [19, 41, 72, 78, 83, 11, 37, 71] as const
 

@@ -48,7 +48,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section ref="root" class="border-y border-chalk/10 section">
+  <section ref="root" class="rule border-b border-chalk/10 section-tight">
     <dl class="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-4">
       <div v-for="(stat, index) in stats" :key="stat.label">
         <dt class="text-sm text-mute">
