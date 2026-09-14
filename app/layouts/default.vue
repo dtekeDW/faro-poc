@@ -1,6 +1,9 @@
 <script setup lang="ts">
 const { isOpen, toggle, close } = useMenu()
 
+// Lets ?type=1|2|3 restyle the whole site while the packages are being judged.
+useTypeSystem()
+
 const links = [
   { label: 'Works', to: '#works', meta: '24 films' },
   { label: 'Gallery', to: '#gallery', meta: '68 stills' },

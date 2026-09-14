@@ -14,8 +14,11 @@
   --color-chalk: #f2f5f8;
   --color-mute: #8a949e;
 
-  --font-display: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
-  --font-accent: "Instrument Serif", ui-serif, Georgia, serif;
+  /* Defaults are package 1; useTypeSystem rewrites these at runtime. */
+  --font-display: "Funnel Display", ui-sans-serif, system-ui, sans-serif;
+  --font-text: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-accent: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
 
   /* Exponential ease-out: fast commit, long settle. */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -34,12 +37,21 @@
  * finds nothing and silently ships no @font-face at all.
  */
 body {
-  font-family: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-text);
 }
 
-.font-accent {
-  font-family: "Instrument Serif", ui-serif, Georgia, serif;
-}
+/*
+ * Literal family names for every candidate. Tailwind v4 compiles its font
+ * utilities to var() references, and @nuxt/fonts only downloads a face it can
+ * see named in a font-family declaration — through the variable alone it finds
+ * nothing and silently ships no @font-face. These classes are used by the
+ * specimen page, so they are not dead weight.
+ */
+.fs-funnel { font-family: "Funnel Display", ui-sans-serif, sans-serif; }
+.fs-instrument { font-family: "Instrument Sans", ui-sans-serif, sans-serif; }
+.fs-geist { font-family: "Geist Mono", ui-monospace, monospace; }
+.fs-bricolage { font-family: "Bricolage Grotesque", ui-sans-serif, sans-serif; }
+.fs-schibsted { font-family: "Schibsted Grotesk", ui-sans-serif, sans-serif; }
 
 html {
   background-color: var(--ground);
@@ -89,6 +101,9 @@ textarea {
 }
 
 /* Tabular figures wherever numbers are compared rather than read. */
+.font-accent { font-family: var(--font-accent); }
+.font-mono { font-family: var(--font-mono); }
+
 .tnum {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";

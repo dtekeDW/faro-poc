@@ -13,8 +13,11 @@ export default defineNuxtConfig({
     // faces as custom properties inside @theme, which the scanner does not read
     // as font-family declarations, so nothing would be downloaded.
     families: [
-      { name: 'Inter Tight', provider: 'google', weights: [400, 500, 700, 800] },
-      { name: 'Instrument Serif', provider: 'google', weights: [400], styles: ['normal', 'italic'] },
+      { name: 'Funnel Display', provider: 'google', weights: [400, 500, 700, 800] },
+      { name: 'Instrument Sans', provider: 'google', weights: [400, 500, 700] },
+      { name: 'Geist Mono', provider: 'google', weights: [400, 500] },
+      { name: 'Bricolage Grotesque', provider: 'google', weights: [400, 700, 800] },
+      { name: 'Schibsted Grotesk', provider: 'google', weights: [400, 500, 700, 800] },
     ],
     defaults: {
       weights: [400, 500, 700, 800],
