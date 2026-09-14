@@ -143,7 +143,7 @@ onBeforeUnmount(() => instance?.destroy())
 <template>
   <section id="gallery" class="py-24 md:py-32">
     <div class="flex flex-wrap items-end justify-between gap-8 px-6 md:px-10">
-      <h2 class="max-w-[12ch] text-[11vw] font-extrabold leading-[0.86] tracking-[-0.05em] md:text-[5.5vw]">
+      <h2 class="max-w-[12ch] type-section">
         Stills from the cutting room
       </h2>
 
@@ -153,7 +153,7 @@ onBeforeUnmount(() => instance?.destroy())
           :key="key"
           type="button"
           :data-active="activeFormat === key"
-          class="cursor-pointer rounded-full border border-chalk/20 px-4 py-1.5 text-sm transition-colors duration-300 hover:border-chalk/50 data-[active=true]:border-dodger data-[active=true]:bg-dodger data-[active=true]:text-ink"
+          class="pill"
           @click="selectFormat(key)"
         >
           {{ key }}

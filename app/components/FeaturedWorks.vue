@@ -8,8 +8,8 @@ const projects = [
 </script>
 
 <template>
-  <section id="works" class="px-6 py-24 md:px-10 md:py-32">
-    <h2 class="max-w-[14ch] text-[11vw] font-extrabold leading-[0.86] tracking-[-0.05em] md:text-[5.5vw]">
+  <section id="works" class="section">
+    <h2 class="max-w-[14ch] type-section">
       A few projects we're proud of
     </h2>
 
@@ -37,10 +37,10 @@ const projects = [
         </div>
 
         <div class="mt-5 flex items-baseline justify-between gap-6 border-t border-chalk/12 pt-4">
-          <h3 class="text-2xl font-bold tracking-[-0.03em] md:text-3xl">
+          <h3 class="type-title">
             {{ project.title }}
           </h3>
-          <span class="tnum shrink-0 font-accent text-lg italic text-mute">{{ project.year }}</span>
+          <span class="type-data shrink-0 type-data text-sm text-mute">{{ project.year }}</span>
         </div>
         <p class="mt-1 text-sm text-mute">
           {{ project.tags.join(' · ') }}

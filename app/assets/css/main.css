@@ -1,27 +1,44 @@
 @import "tailwindcss";
 
-/*
- * Two-tone world: near-black ground, one saturated blue that carries every
- * accent. The blue is the only hue on the page, so it has to do the work of a
- * whole palette — it marks the active state, the link, the focus ring and the
- * menu's inverted ground.
- */
+/* ---------------------------------------------------------------------------
+ * Design tokens
+ *
+ * Two hues and one accent carry the whole surface. Type is a three-role system:
+ * Unbounded sets anything that is meant to be looked at, Instrument Sans sets
+ * anything that is meant to be read, Geist Mono sets anything that is meant to
+ * be compared — counts, durations, timecodes.
+ * ------------------------------------------------------------------------ */
 @theme {
+  /* Ground and surfaces */
   --color-ink: #060606;
   --color-ink-raised: #0e1013;
+
+  /* Accent. The only hue on the page, so it marks every active state. */
   --color-dodger: #1095fb;
   --color-dodger-deep: #0a6cb8;
+
+  /* Foreground. Muted is tinted cool rather than gray so it belongs to the
+     same light as the accent. 6.6:1 on ink — comfortably past AA for body. */
   --color-chalk: #f2f5f8;
   --color-mute: #8a949e;
 
-  /* Defaults are package 1; useTypeSystem rewrites these at runtime. */
-  --font-display: "Epilogue", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Unbounded", ui-sans-serif, system-ui, sans-serif;
   --font-text: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-accent: "Epilogue", ui-sans-serif, system-ui, sans-serif;
 
-  /* Exponential ease-out: fast commit, long settle. */
+  /* Exponential ease-out: fast commit, long settle. One curve for the system. */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-expo: cubic-bezier(0.7, 0, 0.84, 0);
+
+  --duration-quick: 300ms;
+  --duration-settle: 600ms;
+  --duration-stage: 900ms;
+
+  /* Section rhythm. Sections breathe more than blocks, blocks more than lines. */
+  --space-section: 6rem;
+  --space-section-lg: 8rem;
+  --space-gutter: 1.5rem;
+  --space-gutter-lg: 2.5rem;
 }
 
 :root {
@@ -30,78 +47,178 @@
   --ground: var(--color-ink);
 }
 
-/*
- * Literal family names, not var(--font-*). Tailwind v4 compiles its font
- * utilities down to var() references, and @nuxt/fonts only downloads a face it
- * can see named in a font-family declaration — through the variable alone it
- * finds nothing and silently ships no @font-face at all.
- */
-body {
-  font-family: var(--font-text);
-}
-
-/*
- * Literal family names for every candidate. Tailwind v4 compiles its font
- * utilities to var() references, and @nuxt/fonts only downloads a face it can
- * see named in a font-family declaration — through the variable alone it finds
- * nothing and silently ships no @font-face. These classes are used by the
- * specimen page, so they are not dead weight.
- */
-.fs-clash { font-family: "Clash Display", ui-sans-serif, sans-serif; }
-.fs-cabinet { font-family: "Cabinet Grotesk", ui-sans-serif, sans-serif; }
-.fs-unbounded { font-family: "Unbounded", ui-sans-serif, sans-serif; }
-.fs-league { font-family: "League Spartan", ui-sans-serif, sans-serif; }
-.fs-supreme { font-family: "Supreme", ui-sans-serif, sans-serif; }
-.fs-general { font-family: "General Sans", ui-sans-serif, sans-serif; }
-.fs-switzer { font-family: "Switzer", ui-sans-serif, sans-serif; }
-.fs-chillax { font-family: "Chillax", ui-sans-serif, sans-serif; }
-.fs-onest { font-family: "Onest", ui-sans-serif, sans-serif; }
-.fs-golos { font-family: "Golos Text", ui-sans-serif, sans-serif; }
-.fs-hanken { font-family: "Hanken Grotesk", ui-sans-serif, sans-serif; }
-.fs-commissioner { font-family: "Commissioner", ui-sans-serif, sans-serif; }
-.fs-redhat { font-family: "Red Hat Display", ui-sans-serif, sans-serif; }
-.fs-figtree { font-family: "Figtree", ui-sans-serif, sans-serif; }
-.fs-archivo { font-family: "Archivo", ui-sans-serif, sans-serif; }
-.fs-darker { font-family: "Darker Grotesque", ui-sans-serif, sans-serif; }
-.fs-epilogue { font-family: "Epilogue", ui-sans-serif, sans-serif; }
-.fs-instrument { font-family: "Instrument Sans", ui-sans-serif, sans-serif; }
-.fs-geist { font-family: "Geist Mono", ui-monospace, monospace; }
-
 html {
   background-color: var(--ground);
-  transition: background-color 700ms var(--ease-out-expo);
+  transition: background-color var(--duration-settle) var(--ease-out-expo);
   scrollbar-color: color-mix(in oklab, var(--color-dodger) 55%, transparent) transparent;
 }
 
 body {
   background-color: transparent;
+  font-family: var(--font-text);
 }
 
 /*
+ * Literal family names. Tailwind v4 compiles its font utilities down to var()
+ * references, and @nuxt/fonts only downloads a face it can see named in a
+ * font-family declaration — through the variable alone it finds nothing and
+ * silently ships no @font-face at all.
+ */
+.font-display { font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif; }
+.font-text { font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; }
+.font-mono { font-family: "Geist Mono", ui-monospace, SFMono-Regular, monospace; }
+
+/* ---------------------------------------------------------------------------
+ * Type scale
+ *
+ * Four display steps and three reading steps. Tracking tightens as size grows
+ * but stops at -0.02em: Unbounded is a wide geometric with large counters, and
+ * closing them further trades its character for nothing.
+ * ------------------------------------------------------------------------ */
+@layer components {
+  .type-hero {
+    font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: clamp(2.75rem, 9vw, 7.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .type-section {
+    font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: clamp(2rem, 5.2vw, 4rem);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .type-title {
+    font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 500;
+    font-size: clamp(1.125rem, 1.8vw, 1.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .type-nav {
+    font-family: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: clamp(2.25rem, 7vw, 5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .type-body {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    max-width: 68ch;
+  }
+
+  .type-small {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  /* Wide-tracked micro label. Only legible because it is short and uppercase. */
+  .type-micro {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.36em;
+  }
+
+  /* Numbers meant to be compared, never merely read. */
+  .type-data {
+    font-family: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* ---- Layout primitives ---- */
+
+  .section {
+    padding-inline: var(--space-gutter);
+    padding-block: var(--space-section);
+  }
+
+  .rule {
+    border-top: 1px solid color-mix(in oklab, var(--color-chalk) 10%, transparent);
+  }
+
+  /* ---- Controls ---- */
+
+  .pill {
+    cursor: pointer;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--color-chalk) 20%, transparent);
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    transition: border-color var(--duration-quick) var(--ease-out-expo),
+                background-color var(--duration-quick) var(--ease-out-expo),
+                color var(--duration-quick) var(--ease-out-expo);
+  }
+
+  .pill:hover {
+    border-color: color-mix(in oklab, var(--color-chalk) 50%, transparent);
+  }
+
+  .pill[data-active="true"] {
+    border-color: var(--color-dodger);
+    background-color: var(--color-dodger);
+    color: var(--color-ink);
+  }
+
+  /* Underline that wipes out on hover and back in on leave. */
+  .link-wipe {
+    position: relative;
+  }
+
+  .link-wipe::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.25rem;
+    height: 1px;
+    background-color: currentColor;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform var(--duration-settle) var(--ease-out-expo);
+  }
+
+  .link-wipe:hover::after {
+    transform-origin: left;
+    transform: scaleX(1);
+  }
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-inline: var(--space-gutter-lg);
+    padding-block: var(--space-section-lg);
+  }
+}
+
+/* ---------------------------------------------------------------------------
  * Browser-owned surfaces. Left at their defaults these belong to no design
  * system and quietly announce that the page was assembled rather than built.
- */
+ * ------------------------------------------------------------------------ */
 ::selection {
   background-color: var(--color-dodger);
   color: var(--color-ink);
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
 
 ::-webkit-scrollbar-thumb {
   background: color-mix(in oklab, var(--color-dodger) 45%, transparent);
   border-radius: 999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-dodger);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--color-dodger); }
 
 :focus-visible {
   outline: 2px solid var(--color-dodger);
@@ -112,15 +229,6 @@ body {
 input,
 textarea {
   caret-color: var(--color-dodger);
-}
-
-/* Tabular figures wherever numbers are compared rather than read. */
-.font-accent { font-family: var(--font-accent); }
-.font-mono { font-family: var(--font-mono); }
-
-.tnum {
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
 }
 
 @media (prefers-reduced-motion: reduce) {

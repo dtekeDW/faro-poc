@@ -24,8 +24,8 @@ function select(category: string) {
 </script>
 
 <template>
-  <section id="playground" class="px-6 py-24 md:px-10 md:py-32">
-    <h2 class="max-w-[12ch] text-[11vw] font-extrabold leading-[0.86] tracking-[-0.05em] md:text-[5.5vw]">
+  <section id="playground" class="section">
+    <h2 class="max-w-[12ch] type-section">
       Our playground
     </h2>
 
@@ -35,7 +35,7 @@ function select(category: string) {
         :key="category"
         type="button"
         :data-active="category === active"
-        class="cursor-pointer rounded-full border border-chalk/20 px-5 py-2 text-sm transition-colors duration-300 hover:border-chalk/50 data-[active=true]:border-dodger data-[active=true]:bg-dodger data-[active=true]:text-ink"
+        class="pill"
         @click="select(category)"
       >
         {{ category }}
@@ -43,7 +43,7 @@ function select(category: string) {
     </div>
 
     <p class="mt-8 text-sm text-mute">
-      Showing work in <span class="font-accent text-lg italic text-chalk">{{ active }}</span>
+      Showing work in <span class="type-title text-chalk">{{ active }}</span>
     </p>
   </section>
 </template>

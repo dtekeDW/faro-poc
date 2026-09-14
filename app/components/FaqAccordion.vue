@@ -44,8 +44,8 @@ function onToggle() {
 </script>
 
 <template>
-  <section id="questions" class="border-t border-chalk/10 px-6 py-24 md:px-10 md:py-32">
-    <h2 class="max-w-[14ch] text-[11vw] font-extrabold leading-[0.86] tracking-[-0.05em] md:text-[5.5vw]">
+  <section id="questions" class="border-t border-chalk/10 section">
+    <h2 class="max-w-[14ch] type-section">
       The questions before the cameras roll
     </h2>
 
@@ -67,7 +67,7 @@ function onToggle() {
           </AccordionTrigger>
         </AccordionHeader>
 
-        <AccordionContent class="overflow-hidden pb-6 text-[15px] leading-relaxed text-mute">
+        <AccordionContent class="type-body overflow-hidden pb-6 text-mute">
           {{ item.a }}
         </AccordionContent>
       </AccordionItem>

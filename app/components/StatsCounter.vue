@@ -48,13 +48,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <section ref="root" class="border-y border-chalk/10 px-6 py-20 md:px-10">
+  <section ref="root" class="border-y border-chalk/10 section">
     <dl class="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-4">
       <div v-for="(stat, index) in stats" :key="stat.label">
         <dt class="text-sm text-mute">
           {{ stat.label }}
         </dt>
-        <dd class="tnum mt-2 text-[13vw] font-extrabold leading-none tracking-[-0.05em] md:text-[4.5vw]">
+        <dd class="type-data mt-2 type-section">
           {{ shown[index] }}<span class="text-dodger">{{ stat.suffix }}</span>
         </dd>
       </div>

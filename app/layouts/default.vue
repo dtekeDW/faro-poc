@@ -1,9 +1,6 @@
 <script setup lang="ts">
 const { isOpen, toggle, close } = useMenu()
 
-// Lets ?type=1|2|3 restyle the whole site while the packages are being judged.
-useTypeSystem()
-
 const links = [
   { label: 'Works', to: '#works', meta: '24 films' },
   { label: 'Gallery', to: '#gallery', meta: '68 stills' },
@@ -78,10 +75,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             :style="{ transitionDelay: `${index * 40}ms` }"
             @click="close()"
           >
-            <span class="text-[13vw] font-extrabold leading-[0.82] tracking-[-0.05em] md:text-[7vw]">
+            <span class="type-nav">
               {{ link.label }}
             </span>
-            <span v-if="link.meta" class="tnum shrink-0 font-accent text-base italic md:text-xl">
+            <span v-if="link.meta" class="type-data shrink-0 type-data text-sm md:text-base">
               {{ link.meta }}
             </span>
           </a>
@@ -90,7 +87,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
       <div class="mt-10 flex flex-wrap gap-x-12 gap-y-3 text-sm text-ink/70">
         <a href="mailto:hello@sequence.com" class="hover:text-ink">hello@sequence.com</a>
-        <span class="tnum">(217) 555-0134</span>
+        <span class="type-data">(217) 555-0134</span>
         <span>123 Main Street, Austin TX</span>
       </div>
     </nav>

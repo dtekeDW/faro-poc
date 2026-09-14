@@ -19,8 +19,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <section id="clients" class="px-6 py-24 md:px-10">
-    <p class="max-w-[46ch] text-sm leading-relaxed text-mute">
+  <section id="clients" class="section">
+    <p class="type-body max-w-[46ch] text-mute">
       Every logo here represents a creative partnership, a shared vision, and a
       project we are glad to put our name on.
     </p>

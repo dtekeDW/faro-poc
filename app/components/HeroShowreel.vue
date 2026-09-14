@@ -30,16 +30,16 @@ const src = computed(() =>
     <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/70" />
 
     <div class="relative mt-auto px-6 pb-8 md:px-10">
-      <h1 class="max-w-[16ch] text-[13vw] font-extrabold leading-[0.84] tracking-[-0.05em] text-balance md:text-[8.5vw]">
+      <h1 class="max-w-[16ch] type-hero">
         We make videos people remember
       </h1>
 
       <div class="mt-8 flex flex-wrap items-end justify-between gap-6 border-t border-chalk/15 pt-5">
-        <p class="max-w-[42ch] text-sm leading-relaxed text-mute">
+        <p class="type-body max-w-[42ch] text-mute">
           A production studio working across brand film, documentary and
           commercial. Rated
-          <span class="tnum text-chalk">4.9</span> from
-          <span class="tnum text-chalk">480</span> verified reviews.
+          <span class="type-data text-chalk">4.9</span> from
+          <span class="type-data text-chalk">480</span> verified reviews.
         </p>
 
         <a

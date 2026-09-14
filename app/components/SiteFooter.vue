@@ -1,8 +1,8 @@
 <template>
-  <footer id="contact" class="border-t border-chalk/10 px-6 py-20 md:px-10">
+  <footer id="contact" class="border-t border-chalk/10 section">
     <div class="flex flex-col gap-12 md:flex-row md:items-end md:justify-between">
       <div>
-        <p class="text-[13vw] font-extrabold leading-[0.86] tracking-[-0.05em] md:text-[6vw]">
+        <p class="type-section">
           Let's plan it
         </p>
         <a
@@ -19,7 +19,7 @@
       <dl class="grid gap-y-2 text-sm text-mute">
         <div class="flex gap-4">
           <dt class="w-16 shrink-0">Phone</dt>
-          <dd class="tnum text-chalk">(217) 555-0134</dd>
+          <dd class="type-data text-chalk">(217) 555-0134</dd>
         </div>
         <div class="flex gap-4">
           <dt class="w-16 shrink-0">Studio</dt>
@@ -28,7 +28,7 @@
       </dl>
     </div>
 
-    <p class="mt-20 max-w-[60ch] text-xs leading-relaxed text-mute">
+    <p class="type-body mt-20 max-w-[60ch] text-xs text-mute">
       Synthetic demo application built to exercise Grafana Faro frontend
       observability. Sequence is not a real company and no content here
       describes an actual product or service.
