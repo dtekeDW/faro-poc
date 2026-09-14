@@ -13,6 +13,18 @@ const shifts: Shift[] = [
 
 const injected = ref<string[]>([])
 const cls = ref(0)
+const pending = ref(0)
+
+/**
+ * Shifts within 500ms of a user interaction carry `hadRecentInput` and are
+ * excluded from CLS by design — an accordion opening is expected movement and
+ * should not be penalised. A button that injects on click therefore provokes
+ * nothing at all, which is the trap this lab exists to make visible.
+ *
+ * The injection is delayed past that window so the shift counts, exactly as an
+ * ad slot or a late consent bar would behave in the wild.
+ */
+const INPUT_EXCLUSION_MS = 900
 
 /**
  * Layout shift accumulates across the life of the document, so unlike LCP it
@@ -33,12 +45,20 @@ onMounted(() => {
 })
 
 function provoke(shift: Shift) {
-  injected.value = [...injected.value, `${shift.id}-${Date.now()}`]
+  pending.value++
+
+  setTimeout(() => {
+    injected.value = [...injected.value, `${shift.id}-${Date.now()}`]
+    pending.value--
+  }, INPUT_EXCLUSION_MS)
 }
 
 function reset() {
   injected.value = []
 }
+
+const timers: number[] = []
+onBeforeUnmount(() => timers.forEach(clearTimeout))
 </script>
 
 <template>
@@ -59,8 +79,16 @@ function reset() {
     </div>
 
     <p class="type-body mt-6 text-sm text-mute">
-      Each press inserts content above the text below it. Watch the paragraph
-      move, then watch the score climb — it never goes back down.
+      Each press inserts content above the paragraph below —
+      <span class="text-chalk">after a short delay, on purpose</span>. Layout
+      shifts within half a second of a click carry the browser's
+      <span class="type-data">hadRecentInput</span> flag and are excluded from
+      the score, because movement you asked for is not movement that hurt you.
+      Injecting immediately would provoke nothing at all.
+    </p>
+
+    <p v-if="pending" class="type-data mt-4 text-sm text-dodger">
+      shifting in a moment…
     </p>
 
     <div class="mt-12 grid gap-10 md:grid-cols-[1.6fr_1fr] md:items-start">

@@ -68,6 +68,43 @@ This turned out to be the better demo anyway: the viewer clicks, and the number
 that appears is _their_ interaction. That is the moment real user monitoring
 stops being abstract.
 
+## Attribution — which page a measurement is filed under
+
+The expectation is simple: standing on `/inp` with a bad score, the log should
+say `/inp`. Verified in the browser, this holds — on a hard load and across a
+client-side navigation, both dimensions follow the route:
+
+| Dimension   | Value on `/cls` | After navigating to `/errors` |
+| ----------- | --------------- | ----------------------------- |
+| `page.url`  | `…/cls`         | `…/errors`                    |
+| `view.name` | `cls`           | `errors`                      |
+
+Both are set explicitly in `ScenarioShell` rather than left to the SDK's
+`trackNavigation` flag, because the page a signal is filed under is the whole
+point of the demo and should not depend on an experimental option.
+
+**The exception that causes confusion.** LCP, FCP and TTFB are recorded once
+per document load and are therefore filed under the URL the browser _entered_
+on. Landing on `/` and navigating to `/inp` produces an INP filed under `/inp`
+— correct — but no LCP for `/inp` at all, because no document was loaded there.
+Its LCP belongs to `/`.
+
+So a per-route paint comparison only exists if each route was entered
+directly. That is precisely what the iframe runner at `/lab` guarantees, and
+why a router-driven run would produce an empty table.
+
+## A trap worth demonstrating: CLS ignores what you asked for
+
+Layout shifts within 500ms of a user interaction carry `hadRecentInput` and are
+excluded from the score by design — an accordion opening is expected movement
+and should not be penalised.
+
+A button that injects content on click therefore provokes **nothing at all**,
+which is exactly the bug the first version of the CLS lab had. The injection is
+now delayed past that window, which is also how the real offenders behave: an
+ad slot, a late consent bar, a web font swapping in after the paragraph has
+been read.
+
 ## Where the numbers come from
 
 - **`/lab`** — a live run in front of an audience. Honest caveat: values

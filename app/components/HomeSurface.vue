@@ -26,9 +26,18 @@ const { $faro } = useNuxtApp()
  * Names the Faro view after the scenario rather than the raw path, so the
  * dashboard rows carry the label a reader recognises instead of a URL.
  */
-watchEffect(() => {
-  $faro?.api?.setView({ name: active.value.id })
-  $faro?.api?.setSession({ attributes: { scenario: active.value.id, metric: active.value.metric } })
+onMounted(() => {
+  watchEffect(() => {
+    $faro?.api?.setView({ name: active.value.id })
+    $faro?.api?.setSession({
+      ...$faro?.api?.getSession?.(),
+      attributes: {
+        ...$faro?.api?.getSession?.()?.attributes,
+        scenario: active.value.id,
+        metric: active.value.metric,
+      },
+    })
+  })
 })
 </script>
 
