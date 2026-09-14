@@ -8,9 +8,10 @@ const route = useRoute()
  * reason a single-page app cannot measure paint metrics per view.
  */
 const variants = [
-  { id: 'good', label: 'Optimised', width: 1600, note: 'Viewport-sized, explicit dimensions, fetchpriority high, eager.' },
-  { id: 'heavy', label: 'Oversized source', width: 2400, note: 'A 2400px original painted at viewport width. Decoding alone costs time.' },
-  { id: 'lazy', label: 'Oversized and deferred', width: 2400, note: 'Same original, loaded lazily and with no priority hint — the browser has no reason to hurry.' },
+  { id: 'good', label: 'Optimised', width: 1600, delay: 0, note: 'Viewport-sized, explicit dimensions, fetchpriority high, eager. Arrives from cache-friendly storage.' },
+  { id: 'heavy', label: 'Oversized source', width: 2400, delay: 0, note: 'A 2400px original painted at viewport width. Decoding costs time, but on a fast connection not enough to fail.' },
+  { id: 'slow', label: 'Slow origin', width: 2400, delay: 2600, note: 'The same original, held by the server for 2.6s before the first byte. This is what actually ruins LCP.' },
+  { id: 'lazy', label: 'Slow and deferred', width: 2400, delay: 3800, note: 'Late bytes plus no priority hint and lazy loading — the browser has no reason to hurry, and nothing to paint until it does.' },
 ]
 
 const active = computed(() => variants.find(v => v.id === route.query.v) ?? variants[0]!)
@@ -60,7 +61,7 @@ function load(id: string) {
       <figure class="relative aspect-[16/9] overflow-hidden bg-ink-raised">
         <img
           :key="active.id"
-          :src="photo(HERO_IMAGE, active.width, Math.round(active.width * 9 / 16))"
+          :src="`/api/image?id=${HERO_IMAGE}&w=${active.width}&h=${Math.round(active.width * 9 / 16)}&delay=${active.delay}`"
           :width="isDeferred ? undefined : active.width"
           :height="isDeferred ? undefined : Math.round(active.width * 9 / 16)"
           :fetchpriority="isDeferred ? 'auto' : 'high'"
@@ -83,6 +84,14 @@ function load(id: string) {
       recorded once per document, so it cannot be re-measured by swapping the
       image in place — which is exactly why client-side navigation alone never
       produces a second reading.
+    </p>
+
+    <p class="type-body mt-3 text-sm text-mute">
+      File size alone rarely fails this metric. A 2400px original still arrives
+      from a nearby server in milliseconds; what fails it is
+      <span class="text-chalk">late bytes</span> — a slow origin, an uncached
+      CDN miss, a hero behind a redirect. The last two variants delay the
+      response itself, which is why only they turn the reading red.
     </p>
   </section>
 </template>

@@ -2,16 +2,37 @@
  * Files every signal under a page identity the dashboard can group by.
  *
  * Faro's `page.id` is what the Page Performance table shows in its first
- * column. Left unset it falls back to the path, which is why two runs of the
- * same route were indistinguishable.
+ * column. Left unset it falls back to the path, so two labelled runs of the
+ * same route land in one indistinguishable row.
  *
- * Only deliberate labelling parameters become part of the id. Folding every
- * query parameter into it would be wrong outside a demo: page id is a grouping
- * key, and one unbounded parameter — a search term, a session token — turns a
- * readable table into thousands of one-visit rows. Everything else is still
- * filterable, just as attributes rather than as identity.
+ * Every query parameter joins the id here, because comparing labelled runs of
+ * the same route is the entire point of this app. That is a demo decision, not
+ * a default worth copying: page id is a grouping key, and in a real product a
+ * single unbounded parameter — a search term, a tracking token, a session id —
+ * turns a readable table into thousands of one-visit rows. A production
+ * integration should allow-list the parameters that may become identity and
+ * leave the rest as attributes.
  */
-const LABEL_PARAMS = ['test', 'run', 'v', 'delay'] as const
+
+/** Stable, readable identity: `/inp?heavy&v=1` rather than raw URL order. */
+function buildPageId(path: string, query: Record<string, unknown>) {
+  const parts = Object.keys(query)
+    .sort()
+    .map((key) => {
+      const value = query[key]
+
+      // `?flag` with no value arrives as null; it is still a label.
+      if (value === null || value === '')
+        return key
+
+      if (Array.isArray(value))
+        return `${key}=${value.filter(entry => entry !== null).join(',')}`
+
+      return `${key}=${String(value)}`
+    })
+
+  return parts.length ? `${path}?${parts.join('&')}` : path
+}
 
 export function useFaroPage(scenarioId: () => string) {
   const route = useRoute()
@@ -21,27 +42,25 @@ export function useFaroPage(scenarioId: () => string) {
     watchEffect(() => {
       const scenario = findScenario(scenarioId())
 
-      const labels = LABEL_PARAMS
-        .map(key => [key, route.query[key]] as const)
-        .filter(([, value]) => value !== undefined && value !== null)
-        .map(([key, value]) => `${key}=${String(value)}`)
-
-      const id = labels.length
-        ? `${route.path}?${labels.join('&')}`
-        : route.path
-
       const attributes: Record<string, string> = {
         scenario: scenario.id,
         metric: scenario.metric,
       }
 
       for (const [key, value] of Object.entries(route.query)) {
-        if (value !== undefined && value !== null)
-          attributes[`param_${key}`] = String(value)
+        attributes[`param_${key}`] = value === null || value === undefined
+          ? 'true'
+          : String(value)
       }
 
-      $faro?.api?.setPage({ id, url: window.location.href, attributes })
+      $faro?.api?.setPage({
+        id: buildPageId(route.path, route.query),
+        url: window.location.href,
+        attributes,
+      })
+
       $faro?.api?.setView({ name: scenario.id })
+
       $faro?.api?.setSession({
         ...$faro?.api?.getSession?.(),
         attributes: {

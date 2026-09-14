@@ -1,131 +1,162 @@
 <script setup lang="ts">
 useHead({ title: 'Metrics lab — Sequence' })
 
-type Status = 'pending' | 'loading' | 'awaiting-click' | 'done'
+interface SeedJob {
+  runId: string
+  passes: number
+  lines: string[]
+  isRunning: boolean
+  exitCode: number | null
+}
 
-const frame = ref<HTMLIFrameElement | null>(null)
-const statuses = ref<Record<string, Status>>({})
-const current = ref<string | null>(null)
-const isRunning = ref(false)
-const log = ref<string[]>([])
+/**
+ * Targeted runs. Each one touches only the pages that provoke the metric it is
+ * named after, plus the control — so everything it sends answers one question,
+ * and `run=inp-…` becomes a dashboard filter rather than just a timestamp.
+ */
+const targets = [
+  { id: 'all', label: 'Everything' },
+  { id: 'lcp', label: 'LCP' },
+  { id: 'cls', label: 'CLS' },
+  { id: 'inp', label: 'INP' },
+  { id: 'ttfb', label: 'TTFB' },
+  { id: 'errors', label: 'Errors' },
+]
+
+const target = ref('all')
+const passes = ref(3)
+const runId = ref<string | null>(null)
+const job = ref<SeedJob | null>(null)
+const isStarting = ref(false)
+const error = ref<string | null>(null)
 
 const config = useRuntimeConfig().public.faro
 const dashboardUrl = computed(() => config.dashboardUrl || '')
 
-function reset() {
-  statuses.value = Object.fromEntries(SCENARIOS.map(s => [s.id, 'pending'])) as Record<string, Status>
-  log.value = []
-}
-
-reset()
-
-function note(line: string) {
-  log.value = [`${new Date().toLocaleTimeString()}  ${line}`, ...log.value].slice(0, 40)
-}
-
-/** Resolves once the frame has fired load for the route just assigned. */
-function loadRoute(path: string) {
-  return new Promise<void>((resolve) => {
-    const node = frame.value
-    if (!node) {
-      resolve()
-      return
-    }
-
-    const onLoad = () => {
-      node.removeEventListener('load', onLoad)
-      resolve()
-    }
-
-    node.addEventListener('load', onLoad)
-    node.src = path
-  })
-}
+let poll: ReturnType<typeof setInterval> | null = null
 
 /**
- * INP cannot be produced from here. The Event Timing API only records input
- * the browser considers trusted, and a dispatched click is not — so a scripted
- * run would show an empty INP no matter how slow the handler is. The run pauses
- * instead and waits for a real click inside the frame, which is the more
- * convincing moment anyway.
+ * Drives the run through Playwright on the server rather than through an
+ * iframe in this page. The iframe version registered the page loads but lost
+ * the measurements: web-vitals reports LCP, CLS and INP when a page is hidden
+ * or unloaded, and swapping an iframe's src does not deliver those signals
+ * reliably. A real top-level navigation does — and Playwright's input is
+ * trusted, which is the only way INP can be produced without a human clicking.
  */
-function awaitRealClick(): Promise<void> {
-  return new Promise((resolve) => {
-    const doc = frame.value?.contentDocument
-    if (!doc) {
-      resolve()
-      return
-    }
-
-    const onClick = () => {
-      doc.removeEventListener('click', onClick, true)
-      resolve()
-    }
-
-    doc.addEventListener('click', onClick, true)
-  })
-}
-
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-
-async function run() {
-  if (isRunning.value)
+async function start() {
+  if (isStarting.value || job.value?.isRunning)
     return
 
-  isRunning.value = true
-  reset()
+  isStarting.value = true
+  error.value = null
 
-  for (const scenario of SCENARIOS) {
-    current.value = scenario.id
-    statuses.value[scenario.id] = 'loading'
-    note(`Loading /${scenario.id === 'healthy' ? '' : scenario.id} — measuring ${scenario.metric}`)
+  try {
+    const started = await $fetch<{ runId: string }>('/api/seed', {
+      method: 'POST',
+      body: { passes: passes.value, target: target.value },
+    })
 
-    await loadRoute(scenario.id === 'healthy' ? '/' : `/${scenario.id}`)
-
-    // Paint metrics need a moment after load to settle before the SDK batches.
-    await wait(3200)
-
-    if (scenario.needsInteraction) {
-      statuses.value[scenario.id] = 'awaiting-click'
-      note('Waiting for a real click inside the frame — scripted clicks do not count towards INP')
-      await awaitRealClick()
-      await wait(1200)
-    }
-
-    statuses.value[scenario.id] = 'done'
-    note(`Sent — ${scenario.label}`)
+    runId.value = started.runId
+    watchJob(started.runId)
   }
-
-  current.value = null
-  isRunning.value = false
-  note('Run complete. Signals reach Grafana within about a minute.')
+  catch (cause) {
+    error.value = (cause as Error).message
+  }
+  finally {
+    isStarting.value = false
+  }
 }
 
-const progress = computed(() =>
-  Object.values(statuses.value).filter(status => status === 'done').length,
+function watchJob(id: string) {
+  if (poll)
+    clearInterval(poll)
+
+  poll = setInterval(async () => {
+    try {
+      job.value = await $fetch<SeedJob>(`/api/seed/${id}`)
+
+      if (!job.value.isRunning && poll) {
+        clearInterval(poll)
+        poll = null
+      }
+    }
+    catch {
+      // The run may not be registered for a beat; the next tick retries.
+    }
+  }, 1000)
+}
+
+onBeforeUnmount(() => {
+  if (poll)
+    clearInterval(poll)
+})
+
+const completed = computed(() =>
+  (job.value?.lines ?? []).filter(line => / ok$/.test(line)).length,
 )
+
+/** Step count depends on the target, so it is read from the run's own log. */
+const expected = computed(() => {
+  const line = (job.value?.lines ?? []).find(entry => entry.includes('passes over'))
+  const match = line?.match(/(\d+) passes over (\d+) steps/)
+
+  return match ? Number(match[1]) * Number(match[2]) : null
+})
 </script>
 
 <template>
-  <div class="section pt-28">
+  <div class="section pt-32">
     <header class="max-w-[60ch]">
       <h1 class="type-section">
         <PerCharacterRise text="Metrics lab" />
       </h1>
-      <p class="type-body mt-6 text-mute">
+      <p class="type-body mt-7 text-mute">
         Every route below is the same page with exactly one thing wrong with it.
-        Running them in order sends one clean set of measurements per defect, so
-        the dashboard reads as a table with a single red cell per row.
+        A run walks all of them in a real browser and sends one clean set of
+        measurements per defect, so the dashboard reads as a table with a single
+        red cell per row.
       </p>
     </header>
 
-    <div class="mt-10 flex flex-wrap items-center gap-4">
-      <button type="button" class="pill" :disabled="isRunning" @click="run()">
-        {{ isRunning ? 'Running…' : 'Start run' }}
+    <div class="mt-10 flex flex-wrap gap-2">
+      <button
+        v-for="option in targets"
+        :key="option.id"
+        type="button"
+        :data-active="target === option.id"
+        class="pill"
+        :disabled="job?.isRunning"
+        @click="target = option.id"
+      >
+        {{ option.label }}
       </button>
-      <span class="type-data text-sm text-mute">
-        {{ progress }} / {{ SCENARIOS.length }} sent
+    </div>
+
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <button
+        type="button"
+        class="pill"
+        :disabled="isStarting || job?.isRunning"
+        @click="start()"
+      >
+        {{ job?.isRunning ? 'Running…' : 'Start run' }}
+      </button>
+
+      <label class="flex items-center gap-2 text-sm text-mute">
+        Passes
+        <input
+          v-model.number="passes"
+          type="number"
+          min="1"
+          max="30"
+          class="type-data w-16 border-b border-chalk/20 bg-transparent pb-1 text-center outline-none focus:border-dodger"
+        >
+      </label>
+
+      <span v-if="job" class="type-data text-sm text-mute">
+        {{ completed }}<template v-if="expected"> / {{ expected }}</template>
       </span>
+
       <a
         v-if="dashboardUrl"
         :href="dashboardUrl"
@@ -137,26 +168,35 @@ const progress = computed(() =>
       </a>
     </div>
 
+    <p v-if="runId" class="type-data mt-5 text-sm text-dodger">
+      {{ runId }}
+    </p>
+    <p v-if="runId" class="type-body mt-2 text-sm text-mute">
+      Every measurement from this run carries that label, so it can be told
+      apart from every other run in the dashboard.
+    </p>
+
+    <p v-if="error" class="mt-5 text-sm text-[#ff6b5e]">
+      {{ error }}
+    </p>
+
     <div class="mt-14 grid gap-10 lg:grid-cols-[1fr_1.15fr]">
       <ol class="rule border-t">
         <li
           v-for="scenario in SCENARIOS"
           :key="scenario.id"
           class="border-b border-chalk/10 py-6"
-          :data-state="statuses[scenario.id]"
         >
           <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <span
-              class="type-data text-xs"
-              :class="statuses[scenario.id] === 'done' ? 'text-dodger' : 'text-mute'"
-            >{{ scenario.metric === 'none' ? '—' : scenario.metric }}</span>
-            <span class="type-title">{{ scenario.label }}</span>
-            <span class="ml-auto text-xs text-mute">
-              <template v-if="statuses[scenario.id] === 'awaiting-click'">click in the frame</template>
-              <template v-else-if="statuses[scenario.id] === 'loading'">measuring…</template>
-              <template v-else-if="statuses[scenario.id] === 'done'">sent</template>
-              <template v-else>waiting</template>
+            <span class="type-data text-xs text-dodger">
+              {{ scenario.metric === 'none' ? '—' : scenario.metric }}
             </span>
+            <NuxtLink
+              :to="scenario.id === 'healthy' ? '/' : `/${scenario.id}`"
+              class="type-title link-wipe"
+            >
+              {{ scenario.label }}
+            </NuxtLink>
           </div>
           <p class="type-body mt-2 text-sm text-mute">
             {{ scenario.cause }}
@@ -167,29 +207,23 @@ const progress = computed(() =>
         </li>
       </ol>
 
-      <div class="space-y-4">
-        <!-- Visible on purpose: each frame load is a real document load, which
-             is the only way LCP, FCP and TTFB are measured again per route. -->
-        <div class="relative aspect-[4/3] overflow-hidden border border-chalk/12 bg-ink-raised">
-          <iframe
-            ref="frame"
-            title="Scenario preview"
-            class="size-full"
-            src="about:blank"
-          />
-          <p
-            v-if="!isRunning && !progress"
-            class="pointer-events-none absolute inset-0 grid place-items-center text-sm text-mute"
-          >
-            The run appears here
-          </p>
-        </div>
-
-        <ol v-if="log.length" class="type-data max-h-52 space-y-1 overflow-y-auto text-xs text-mute">
-          <li v-for="(line, index) in log" :key="index">
+      <div>
+        <ol
+          v-if="job?.lines.length"
+          class="type-data max-h-[30rem] space-y-1 overflow-y-auto border border-chalk/12 p-5 text-xs text-mute"
+        >
+          <li v-for="(line, index) in [...job.lines].reverse()" :key="index">
             {{ line }}
           </li>
         </ol>
+        <div v-else class="grid min-h-[16rem] place-items-center border border-chalk/12 text-sm text-mute">
+          The run log appears here
+        </div>
+
+        <p v-if="job && !job.isRunning" class="type-body mt-5 text-sm text-mute">
+          Finished. Signals reach Grafana within about a minute — filter on
+          <span class="type-data text-chalk">run={{ runId }}</span>.
+        </p>
       </div>
     </div>
   </div>

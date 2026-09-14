@@ -21,24 +21,49 @@ import { chromium } from '@playwright/test'
 const BASE_URL = process.env.SEED_BASE_URL ?? 'http://localhost:3000'
 const PASSES = Number(process.env.SEED_PASSES ?? 12)
 
+/**
+ * One label for the whole invocation, carried on every URL. It becomes part of
+ * Faro's page id, so every row in the dashboard names the run that produced it
+ * — which is what makes two seeding runs comparable instead of merged.
+ */
+const TARGET = process.env.SEED_TARGET ?? 'all'
+const RUN_ID = process.env.SEED_RUN_ID ?? buildRunId(TARGET)
+
+function buildRunId(prefix: string) {
+  const now = new Date()
+  const pad = (value: number) => String(value).padStart(2, '0')
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  const time = `${pad(now.getHours())}${pad(now.getMinutes())}`
+
+  return `${prefix}-${stamp}-${time}-${Math.random().toString(36).slice(2, 6)}`
+}
+
+function withRun(path: string) {
+  return `${path}${path.includes('?') ? '&' : '?'}run=${encodeURIComponent(RUN_ID)}`
+}
+
 interface Step {
   path: string
   label: string
+  /** Which targeted run this step belongs to. */
+  target: string
   /** Run after load to provoke the metric that needs interaction. */
   drive?: (page: Page) => Promise<void>
 }
 
 const steps: Step[] = [
-  { path: '/', label: 'control' },
-  { path: '/lcp?v=good', label: 'lcp optimised' },
-  { path: '/lcp?v=heavy', label: 'lcp oversized' },
-  { path: '/lcp?v=lazy', label: 'lcp deferred' },
-  { path: '/ttfb?delay=0', label: 'ttfb none' },
-  { path: '/ttfb?delay=900', label: 'ttfb slow' },
-  { path: '/ttfb?delay=2000', label: 'ttfb very slow' },
+  { path: '/', label: 'control', target: 'control' },
+  { path: '/lcp?v=good', label: 'lcp optimised', target: 'lcp' },
+  { path: '/lcp?v=heavy', label: 'lcp oversized', target: 'lcp' },
+  { path: '/lcp?v=slow', label: 'lcp slow origin', target: 'lcp' },
+  { path: '/lcp?v=lazy', label: 'lcp slow deferred', target: 'lcp' },
+  { path: '/ttfb?delay=0', label: 'ttfb none', target: 'ttfb' },
+  { path: '/ttfb?delay=900', label: 'ttfb slow', target: 'ttfb' },
+  { path: '/ttfb?delay=2000', label: 'ttfb very slow', target: 'ttfb' },
   {
     path: '/cls',
     label: 'cls storm',
+    target: 'cls',
     drive: async (page) => {
       await page.getByRole('button', { name: /Storm/ }).click()
       // The lab delays injection past the input exclusion window on purpose.
@@ -48,6 +73,7 @@ const steps: Step[] = [
   {
     path: '/inp',
     label: 'inp severe',
+    target: 'inp',
     drive: async (page) => {
       for (const name of [/Heavy/, /Severe/, /Light/]) {
         await page.getByRole('button', { name }).click()
@@ -58,6 +84,7 @@ const steps: Step[] = [
   {
     path: '/errors',
     label: 'errors',
+    target: 'errors',
     drive: async (page) => {
       for (const name of [/Uncaught exception/, /Failed request/, /Unhandled rejection/]) {
         await page.getByRole('button', { name }).click()
@@ -77,7 +104,7 @@ async function runStep(browser: Browser, step: Step, pass: number) {
   const page = await context.newPage()
 
   try {
-    await page.goto(`${BASE_URL}${step.path}`, { waitUntil: 'load', timeout: 45_000 })
+    await page.goto(`${BASE_URL}${withRun(step.path)}`, { waitUntil: 'load', timeout: 45_000 })
     // Let the paint metrics settle before anything else happens.
     await page.waitForTimeout(2500)
 
@@ -102,17 +129,33 @@ async function runStep(browser: Browser, step: Step, pass: number) {
 }
 
 async function main() {
-  console.warn(`Seeding ${BASE_URL} — ${PASSES} passes over ${steps.length} scenarios`)
+  /*
+   * A targeted run touches only the pages that provoke the metric it is named
+   * after, plus the control. Everything it sends therefore belongs to one
+   * question, which is what makes `run=inp-…` a useful dashboard filter rather
+   * than just a timestamp.
+   */
+  const selected = TARGET === 'all'
+    ? steps
+    : steps.filter(step => step.target === TARGET || step.target === 'control')
+
+  if (!selected.length) {
+    console.error(`Unknown target "${TARGET}"`)
+    process.exit(1)
+  }
+
+  console.warn(`Seeding ${BASE_URL} — target ${TARGET}, ${PASSES} passes over ${selected.length} steps`)
+  console.warn(`Run id: ${RUN_ID}`)
 
   const browser = await chromium.launch({ headless: true })
 
   for (let pass = 1; pass <= PASSES; pass++) {
-    for (const step of steps)
+    for (const step of selected)
       await runStep(browser, step, pass)
   }
 
   await browser.close()
-  console.warn('Done. Signals reach Grafana within about a minute.')
+  console.warn(`Done — filter the dashboard on run=${RUN_ID}. Signals arrive within about a minute.`)
 }
 
 main().catch((error) => {

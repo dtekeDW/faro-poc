@@ -152,6 +152,23 @@ is reported when it is hidden or left. A shift an hour after load still counts,
 which is why long-lived pages and infinite scrolls are where it usually goes
 wrong.
 
+## What it takes to actually fail each metric
+
+Provoking a bad score turned out to be harder than expected in two cases, and
+both failures are worth showing.
+
+**LCP is not about file size.** The first version served a 2400px original and
+still scored green: a large image arrives from a nearby server in milliseconds.
+What fails the metric is *late bytes* — a slow origin, an uncached CDN miss, a
+hero behind a redirect. The lab now serves its image through an endpoint that
+holds the response, and only the delayed variants turn red. Measured: 0.19s
+direct against 2.70s delayed.
+
+**CLS ignores movement you asked for**, and is scored as the worst
+five-second burst rather than a total. Both are covered above.
+
+CLS, INP, TTFB and error capture all provoke reliably.
+
 ## Where the numbers come from
 
 - **`/lab`** — a live run in front of an audience. Honest caveat: values
@@ -160,7 +177,15 @@ wrong.
   all a demo needs.
 - **Playwright seeder** — fills the p75 curves before the meeting, and can
   produce INP because CDP-driven input is trusted. Any number worth quoting
-  comes from here.
+  comes from here. Runs are **targeted and labelled**: a run touches only the
+  pages that provoke the metric it is named after, plus the control, and every
+  URL carries `run=<id>`. The id leads with the target, so a dashboard filter
+  reads as the question it answers — `run=inp-2026-09-14-1803-mxzd`.
+- **`/lab` as a controller.** The lab no longer drives the scenarios itself; it
+  starts a seeding run on the server and streams its log. Driving them in an
+  iframe registered the page loads but lost the measurements, because
+  web-vitals reports LCP, CLS and INP when a page is hidden or unloaded and
+  swapping an iframe's `src` does not deliver those signals reliably.
 - **k6 is not used.** Core k6 renders nothing and emits no web vitals at all;
   only the browser module does, and its real strength — load and concurrency —
   is not what a vitals showcase needs.
