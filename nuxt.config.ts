@@ -35,6 +35,9 @@ export default defineNuxtConfig({
         environment: 'local',
         // Overwritten at build time so dashboards can compare releases.
         version: process.env.GIT_SHA ?? 'dev',
+
+        // Linked from the lab so the run and the result sit one click apart.
+        dashboardUrl: '',
       },
     },
   },
