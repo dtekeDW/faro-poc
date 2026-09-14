@@ -9,8 +9,8 @@ const { isDegraded } = defineProps<{ isDegraded: boolean }>()
  */
 const src = computed(() =>
   isDegraded
-    ? 'https://picsum.photos/seed/sequence-hero/2400/1600'
-    : 'https://picsum.photos/seed/sequence-hero/1600/900',
+    ? photo(HERO_IMAGE, 2400, 1600)
+    : photo(HERO_IMAGE, 1600, 900),
 )
 </script>
 
@@ -25,7 +25,7 @@ const src = computed(() =>
       :loading="isDegraded ? 'lazy' : 'eager'"
       alt=""
       data-testid="hero-media"
-      class="absolute inset-0 size-full object-cover"
+      class="photo absolute inset-0 size-full object-cover"
     >
     <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/70" />
 

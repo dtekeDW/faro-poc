@@ -35,9 +35,8 @@ let instance: MotionViewInstance | null = null
 const edge = computed(() => (isDegraded ? 2400 : 960))
 
 function imagesFor(seed: string) {
-  return Array.from(
-    { length: 5 },
-    (_, index) => `https://picsum.photos/seed/${seed}-${index}/${edge.value}/${Math.round(edge.value * 9 / 16)}`,
+  return (REEL_IMAGES[seed] ?? []).map(
+    id => photo(id, edge.value, Math.round(edge.value * 9 / 16)),
   )
 }
 
@@ -166,7 +165,7 @@ onBeforeUnmount(() => instance?.destroy())
     <canvas
       ref="canvas"
       data-testid="orbit"
-      class="mt-14 block w-full"
+      class="photo mt-14 block w-full"
     />
   </section>
 </template>

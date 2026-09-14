@@ -151,6 +151,22 @@ body {
     border-top: 1px solid color-mix(in oklab, var(--color-chalk) 10%, transparent);
   }
 
+  /*
+   * One grade across every photograph. Subjects still differ, but a shared
+   * desaturation and a slight lift in contrast is what makes a set of stills
+   * read as one body of work rather than as a stock search.
+   */
+  .photo {
+    filter: grayscale(0.62) contrast(1.08) brightness(0.94);
+    transition: filter var(--duration-stage) var(--ease-out-expo);
+  }
+
+  /* Colour returns on approach, which makes hovering feel like looking closer. */
+  .photo-reveal:hover .photo,
+  .photo-reveal:focus-visible .photo {
+    filter: grayscale(0) contrast(1) brightness(1);
+  }
+
   /* ---- Controls ---- */
 
   .pill {

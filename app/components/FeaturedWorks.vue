@@ -1,9 +1,9 @@
 <script setup lang="ts">
 const projects = [
-  { title: 'After School', year: 2025, tags: ['Documentary', 'Social'], scale: 'lg' },
-  { title: 'Code in the Capsule', year: 2026, tags: ['Motion', 'Social'], scale: 'sm' },
-  { title: 'Light Through the Archive', year: 2025, tags: ['Documentary', 'Corporate'], scale: 'sm' },
-  { title: 'Northbound', year: 2026, tags: ['Commercial', 'Product'], scale: 'lg' },
+  { title: 'After School', year: 2025, tags: ['Documentary', 'Social'], scale: 'lg', image: WORK_IMAGES[0] },
+  { title: 'Code in the Capsule', year: 2026, tags: ['Motion', 'Social'], scale: 'sm', image: WORK_IMAGES[1] },
+  { title: 'Light Through the Archive', year: 2025, tags: ['Documentary', 'Corporate'], scale: 'sm', image: WORK_IMAGES[2] },
+  { title: 'Northbound', year: 2026, tags: ['Commercial', 'Product'], scale: 'lg', image: WORK_IMAGES[3] },
 ] as const
 </script>
 
@@ -21,18 +21,18 @@ const projects = [
       <article
         v-for="project in projects"
         :key="project.title"
-        class="group"
+        class="group photo-reveal"
         :class="project.scale === 'lg' ? 'md:col-span-7' : 'md:col-span-5 md:self-end'"
       >
         <div class="overflow-hidden bg-ink-raised">
           <img
-            :src="`https://picsum.photos/seed/${encodeURIComponent(project.title)}/1200/${project.scale === 'lg' ? 750 : 900}`"
+            :src="photo(project.image, 1200, project.scale === 'lg' ? 750 : 900)"
             :width="1200"
             :height="project.scale === 'lg' ? 750 : 900"
             loading="lazy"
             decoding="async"
             :alt="project.title"
-            class="w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+            class="photo w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
           >
         </div>
 

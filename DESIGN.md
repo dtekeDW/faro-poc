@@ -114,3 +114,20 @@ page with no webfonts at all.
 The generated `@font-face` set includes metric-matched fallbacks
 (`size-adjust`, `ascent-override`), so the swap does not shift layout — the CLS
 this project measures should come only from the modules degraded on purpose.
+
+## Photography
+
+Every image comes from one curated set in `app/composables/usePhotography.ts`,
+referencing picsum's fixed catalogue (`/id/<n>/…`) rather than its random
+`/seed/<word>` endpoint — so the same picture comes back on every load.
+
+The direction is atmospheric and wide: landscape, coast, forest, empty
+architecture, muted light, a figure in the frame rather than a face at the
+camera. No product shots, no desks, no flat lays.
+
+One grade sits over all of it — `.photo` applies
+`grayscale(0.62) contrast(1.08) brightness(0.94)`, including on the gallery
+canvas. Subjects still differ, but a shared desaturation is what makes a set of
+stills read as one body of work instead of a stock search. Interactive frames
+carry `.photo-reveal`, which returns full colour on hover, so approaching an
+image feels like looking closer at it.
