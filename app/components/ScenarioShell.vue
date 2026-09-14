@@ -19,38 +19,48 @@ useFaroPage(() => id)
 </script>
 
 <template>
-  <div class="section pt-32">
-    <header class="max-w-[52ch]">
-      <p class="type-data text-sm text-dodger">
-        {{ scenario.metric === 'none' ? 'Control' : scenario.metric }}
-      </p>
-      <h1 class="type-section mt-4">
-        <PerCharacterRise :text="scenario.label" />
-      </h1>
-      <p class="type-body mt-7 text-mute">
-        {{ scenario.cause }}
-      </p>
-      <p class="type-body mt-3 text-chalk/75">
-        {{ scenario.effect }}
-      </p>
-    </header>
+  <div>
+    <!--
+      Rendered before everything else and full bleed. LCP only ever considers
+      elements inside the viewport, so a hero placed below an explanatory header
+      is never a candidate — the heading paints first and the page scores green
+      however slow the image is.
+    -->
+    <slot name="lead" />
 
-    <div class="mt-20">
-      <slot />
+    <div class="section" :class="$slots.lead ? 'pt-16' : 'pt-32'">
+      <header class="max-w-[52ch]">
+        <p class="type-data text-sm text-dodger">
+          {{ scenario.metric === 'none' ? 'Control' : scenario.metric }}
+        </p>
+        <h1 class="type-section mt-4">
+          <PerCharacterRise :text="scenario.label" />
+        </h1>
+        <p class="type-body mt-7 text-mute">
+          {{ scenario.cause }}
+        </p>
+        <p class="type-body mt-3 text-chalk/75">
+          {{ scenario.effect }}
+        </p>
+      </header>
+
+      <div class="mt-20">
+        <slot />
+      </div>
+
+      <nav class="rule mt-28 flex flex-wrap items-center gap-x-8 gap-y-3 pt-8 text-sm">
+        <NuxtLink to="/lab" class="link-wipe text-dodger">
+          Back to the lab
+        </NuxtLink>
+        <NuxtLink
+          v-for="other in others"
+          :key="other.id"
+          :to="`/${other.id}`"
+          class="text-mute transition-colors duration-300 hover:text-chalk"
+        >
+          {{ other.metric }}
+        </NuxtLink>
+      </nav>
     </div>
-
-    <nav class="rule mt-28 flex flex-wrap items-center gap-x-8 gap-y-3 pt-8 text-sm">
-      <NuxtLink to="/lab" class="link-wipe text-dodger">
-        Back to the lab
-      </NuxtLink>
-      <NuxtLink
-        v-for="other in others"
-        :key="other.id"
-        :to="`/${other.id}`"
-        class="text-mute transition-colors duration-300 hover:text-chalk"
-      >
-        {{ other.metric }}
-      </NuxtLink>
-    </nav>
   </div>
 </template>

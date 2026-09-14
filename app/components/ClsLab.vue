@@ -87,8 +87,22 @@ onMounted(() => {
 
 const timers: ReturnType<typeof setTimeout>[] = []
 
+const router = useRouter()
+const route = useRoute()
+
+/**
+ * Records the severity in the query string, which `useFaroPage` folds into the
+ * page id. Without it every press of every button lands under `/cls` and the
+ * dashboard cannot say which one produced the score. Replaced rather than
+ * pushed: a new document would reset the measurement that is being built up.
+ */
+function markLevel(id: string) {
+  router.replace({ query: { ...route.query, level: id } })
+}
+
 function provoke(severity: Severity) {
   lastPressed.value = severity
+  markLevel(severity.id)
   pending.value++
 
   for (let index = 0; index < severity.bursts; index++) {

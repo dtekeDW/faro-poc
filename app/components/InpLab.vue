@@ -38,9 +38,20 @@ function rate(duration: number) {
   return { word: 'poor', tone: 'text-[#ff6b5e]' }
 }
 
+const router = useRouter()
+const route = useRoute()
+
 /** Blocks the main thread inside the handler, which is what INP measures. */
 function press(severity: Severity) {
   lastPressed.value = severity
+
+  /*
+   * Records the severity in the query string, which `useFaroPage` folds into
+   * the page id. Without it every button lands under `/inp` and the dashboard
+   * cannot say which weight produced the reading. Replaced rather than pushed,
+   * so the document — and the interaction being measured — survives.
+   */
+  router.replace({ query: { ...route.query, level: severity.id } })
 
   const until = performance.now() + severity.block
   while (performance.now() < until) { /* deliberate busy wait */ }

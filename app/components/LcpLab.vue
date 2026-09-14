@@ -15,7 +15,6 @@ const variants = [
 ]
 
 const active = computed(() => variants.find(v => v.id === route.query.v) ?? variants[0]!)
-const isDeferred = computed(() => active.value.id === 'lazy')
 
 const lcp = ref<number | null>(null)
 
@@ -57,21 +56,7 @@ function load(id: string) {
       {{ active.note }}
     </p>
 
-    <div class="mt-12 grid gap-10 md:grid-cols-[1.6fr_1fr] md:items-start">
-      <figure class="relative aspect-[16/9] overflow-hidden bg-ink-raised">
-        <img
-          :key="active.id"
-          :src="`/api/image?id=${HERO_IMAGE}&w=${active.width}&h=${Math.round(active.width * 9 / 16)}&delay=${active.delay}`"
-          :width="isDeferred ? undefined : active.width"
-          :height="isDeferred ? undefined : Math.round(active.width * 9 / 16)"
-          :fetchpriority="isDeferred ? 'auto' : 'high'"
-          :loading="isDeferred ? 'lazy' : 'eager'"
-          alt=""
-          data-testid="lcp-media"
-          class="photo size-full object-cover"
-        >
-      </figure>
-
+    <div class="mt-12 max-w-sm">
       <MetricReadout :value="lcp" :good="2500" :poor="4000">
         <template #label>
           Largest Contentful Paint
