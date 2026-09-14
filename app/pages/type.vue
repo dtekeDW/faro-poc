@@ -6,9 +6,9 @@ useHead({ title: 'Type packages — Sequence' })
 /** Faces are named literally so each specimen renders in its own package,
  *  independent of whatever the runtime switcher has applied to the page. */
 const faceClass: Record<string, { display: string, text: string, mono: string, accent: string }> = {
-  1: { display: 'fs-funnel', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-instrument' },
-  2: { display: 'fs-bricolage', text: 'fs-schibsted', mono: 'fs-geist', accent: 'fs-bricolage' },
-  3: { display: 'fs-schibsted', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-bricolage' },
+  1: { display: 'fs-geist-sans', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-geist-sans' },
+  2: { display: 'fs-host', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-host' },
+  3: { display: 'fs-madefor', text: 'fs-instrument', mono: 'fs-geist', accent: 'fs-madefor' },
 }
 </script>
 
@@ -62,7 +62,7 @@ const faceClass: Record<string, { display: string, text: string, mono: string, a
           </p>
 
           <p :class="faceClass[pkg.id]!.accent" class="mt-6 text-lg italic text-mute">
-            An aside set in the accent face
+            Display face at text size, for asides and captions
           </p>
         </div>
 
