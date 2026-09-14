@@ -95,8 +95,13 @@ the previous move has visibly settled:
 | --- | --- |
 | 140ms | Headline resolves from blur, over 1450ms |
 | 1150ms | Rule draws itself left to right, over 1100ms |
-| 1650ms | Supporting row drifts up, over 900ms |
-| 1750ms | “Play showreel” rises per character |
+| 1500ms | Lede resolves from `blur(6px)`, over 1200ms |
+| 1950ms | Call to action drifts up, over 800ms |
+| 2050ms | “Play showreel” rises per character |
+
+The lede resolves rather than merely fading — a quieter member of the headline's
+family, so the two read as one idea at two volumes. It and the call to action
+arrive separately; as a single block both felt incidental.
 
 The menu is the other authored moment: the panel clips down while the ground
 inverts underneath it, as one gesture rather than two effects. Everything else
