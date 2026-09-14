@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+
+/* Secondary-text candidates for the specimen wall at /text. */
+.ts-switzer { font-family: "Switzer", ui-sans-serif, sans-serif; }
+.ts-general { font-family: "General Sans", ui-sans-serif, sans-serif; }
+.ts-supreme { font-family: "Supreme", ui-sans-serif, sans-serif; }
+.ts-synonym { font-family: "Synonym", ui-sans-serif, sans-serif; }
+.ts-author { font-family: "Author", ui-sans-serif, sans-serif; }
+.ts-ranade { font-family: "Ranade", ui-sans-serif, sans-serif; }
+.ts-public { font-family: "Public Sans", ui-sans-serif, sans-serif; }
+.ts-plex { font-family: "IBM Plex Sans", ui-sans-serif, sans-serif; }
+.ts-commissioner { font-family: "Commissioner", ui-sans-serif, sans-serif; }
+.ts-golos { font-family: "Golos Text", ui-sans-serif, sans-serif; }
+.ts-vietnam { font-family: "Be Vietnam Pro", ui-sans-serif, sans-serif; }
+.ts-karla { font-family: "Karla", ui-sans-serif, sans-serif; }
+.ts-hanken { font-family: "Hanken Grotesk", ui-sans-serif, sans-serif; }
+.ts-figtree { font-family: "Figtree", ui-sans-serif, sans-serif; }
+.ts-onest { font-family: "Onest", ui-sans-serif, sans-serif; }
+.ts-chivo { font-family: "Chivo", ui-sans-serif, sans-serif; }
+.ts-spline { font-family: "Spline Sans", ui-sans-serif, sans-serif; }
+.ts-madefor { font-family: "Wix Madefor Text", ui-sans-serif, sans-serif; }
+
 /* ---------------------------------------------------------------------------
  * Design tokens
  *
