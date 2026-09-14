@@ -47,40 +47,50 @@ interface Step {
   label: string
   /** Which targeted run this step belongs to. */
   target: string
+  /**
+   * How long to let the page settle before hiding it, in milliseconds.
+   * Paint metrics are only reported once the page is hidden, so a step that
+   * hides too early reports whatever had painted by then — for a hero held
+   * back by the server, that is nothing at all.
+   */
+  settleMs?: number
   /** Run after load to provoke the metric that needs interaction. */
   drive?: (page: Page) => Promise<void>
 }
 
 const steps: Step[] = [
   { path: '/', label: 'control', target: 'control' },
-  { path: '/lcp?v=good', label: 'lcp optimised', target: 'lcp' },
-  { path: '/lcp?v=heavy', label: 'lcp oversized', target: 'lcp' },
-  { path: '/lcp?v=slow', label: 'lcp slow origin', target: 'lcp' },
-  { path: '/lcp?v=lazy', label: 'lcp slow deferred', target: 'lcp' },
+  { path: '/lcp?v=good', label: 'lcp optimised', target: 'lcp', settleMs: 3000 },
+  { path: '/lcp?v=heavy', label: 'lcp oversized', target: 'lcp', settleMs: 3000 },
+  // The origin holds these for 2.6s and 3.8s; the wait has to outlast that.
+  { path: '/lcp?v=slow', label: 'lcp slow origin', target: 'lcp', settleMs: 5500 },
+  { path: '/lcp?v=lazy', label: 'lcp slow deferred', target: 'lcp', settleMs: 7000 },
   { path: '/ttfb?delay=0', label: 'ttfb none', target: 'ttfb' },
   { path: '/ttfb?delay=900', label: 'ttfb slow', target: 'ttfb' },
   { path: '/ttfb?delay=2000', label: 'ttfb very slow', target: 'ttfb' },
-  {
+  ...(['Light', 'Heavy', 'Severe', 'Storm'] as const).map(level => ({
     path: '/cls',
-    label: 'cls storm',
+    label: `cls ${level.toLowerCase()}`,
     target: 'cls',
-    drive: async (page) => {
-      await page.getByRole('button', { name: /Storm/ }).click()
+    drive: async (page: Page) => {
+      await page.getByRole('button', { name: new RegExp(`^${level}`) }).click()
       // The lab delays injection past the input exclusion window on purpose.
       await page.waitForTimeout(3500)
     },
-  },
-  {
+  })),
+  ...(['Instant', 'Light', 'Heavy', 'Severe'] as const).map(level => ({
     path: '/inp',
-    label: 'inp severe',
+    label: `inp ${level.toLowerCase()}`,
     target: 'inp',
-    drive: async (page) => {
-      for (const name of [/Heavy/, /Severe/, /Light/]) {
-        await page.getByRole('button', { name }).click()
-        await page.waitForTimeout(900)
+    drive: async (page: Page) => {
+      // Clicked three times so the reported INP is a settled p75, not one
+      // outlier: the metric reports a high percentile of all interactions.
+      for (let i = 0; i < 3; i++) {
+        await page.getByRole('button', { name: new RegExp(`^${level}`) }).click()
+        await page.waitForTimeout(700)
       }
     },
-  },
+  })),
   {
     path: '/errors',
     label: 'errors',
@@ -104,9 +114,22 @@ async function runStep(browser: Browser, step: Step, pass: number) {
   const page = await context.newPage()
 
   try {
-    await page.goto(`${BASE_URL}${withRun(step.path)}`, { waitUntil: 'load', timeout: 45_000 })
-    // Let the paint metrics settle before anything else happens.
-    await page.waitForTimeout(2500)
+    await page.goto(`${BASE_URL}${withRun(step.path)}`, { waitUntil: 'load', timeout: 60_000 })
+
+    /*
+     * Wait for the largest element to actually arrive. `load` fires before a
+     * lazily-loaded hero has bytes, and hiding the page at that point reports
+     * an LCP that never saw the image — which is how an entire run of LCP
+     * scenarios came back green.
+     */
+    await page
+      .waitForFunction(() => {
+        const img = document.querySelector('[data-testid=lcp-media]') as HTMLImageElement | null
+        return !img || (img.complete && img.naturalWidth > 0)
+      }, undefined, { timeout: 20_000 })
+      .catch(() => { /* No hero on this route, or it never arrived. */ })
+
+    await page.waitForTimeout(step.settleMs ?? 2500)
 
     await step.drive?.(page)
 
@@ -115,8 +138,18 @@ async function runStep(browser: Browser, step: Step, pass: number) {
      * on the same signal. Closing without this would discard the very metrics
      * the step exists to produce.
      */
-    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')))
-    await page.waitForTimeout(1500)
+    /*
+     * web-vitals listens for the document actually becoming hidden, not for a
+     * dispatched event, so the visibility state is overridden before firing.
+     * This is the moment LCP, CLS and INP are reported and the batch flushed.
+     */
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true })
+      Object.defineProperty(document, 'hidden', { value: true, configurable: true })
+      document.dispatchEvent(new Event('visibilitychange'))
+      window.dispatchEvent(new Event('pagehide'))
+    })
+    await page.waitForTimeout(2000)
 
     console.warn(`pass ${pass}  ${step.label.padEnd(16)} ok`)
   }
@@ -147,7 +180,14 @@ async function main() {
   console.warn(`Seeding ${BASE_URL} — target ${TARGET}, ${PASSES} passes over ${selected.length} steps`)
   console.warn(`Run id: ${RUN_ID}`)
 
-  const browser = await chromium.launch({ headless: true })
+  /*
+   * The full Chromium in new headless mode, not Playwright's default headless
+   * shell. web-vitals refuses to report LCP for a page that was hidden before
+   * its largest paint, and the shell counts as hidden for its entire life — so
+   * every LCP scenario came back with no measurement at all while TTFB, FCP,
+   * CLS and INP arrived normally.
+   */
+  const browser = await chromium.launch({ headless: true, channel: 'chromium' })
 
   for (let pass = 1; pass <= PASSES; pass++) {
     for (const step of selected)

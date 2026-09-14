@@ -20,6 +20,23 @@ declare global {
   }
 }
 
+/**
+ * Stable, readable identity: `/lcp?v=lazy`, with parameters sorted so that
+ * `?b=2&a=1` and `?a=1&b=2` are the same row rather than two.
+ */
+function buildPageId(pathname: string, search: string) {
+  const params = new URLSearchParams(search)
+  const parts = [...new Set(params.keys())]
+    .sort()
+    .map((key) => {
+      const value = params.get(key)
+
+      return value ? `${key}=${value}` : key
+    })
+
+  return parts.length ? `${pathname}?${parts.join('&')}` : pathname
+}
+
 export default defineNuxtPlugin({
   name: 'faro',
   // Run before other plugins so errors thrown during their setup are captured.
@@ -78,6 +95,20 @@ export default defineNuxtPlugin({
     const router = useRouter()
     router.afterEach((to) => {
       faro.api.setView({ name: to.name?.toString() ?? to.path })
+    })
+
+    /*
+     * Named before anything can report.
+     *
+     * Paint metrics — TTFB, FCP and LCP — are emitted during load, well before
+     * Vue mounts, so a page identity set from a component arrives too late and
+     * those measurements are filed under Faro's placeholder `/*`. Setting it
+     * here, synchronously after init, is what makes per-route paint comparison
+     * possible at all. Components still refresh it on client-side navigation.
+     */
+    faro.api.setPage({
+      id: buildPageId(window.location.pathname, window.location.search),
+      url: window.location.href,
     })
 
     window.__faro = faro

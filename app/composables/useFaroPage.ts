@@ -61,11 +61,18 @@ export function useFaroPage(scenarioId: () => string) {
 
       $faro?.api?.setView({ name: scenario.id })
 
+      /*
+       * Only the scenario goes on the session. Query parameters must not:
+       * sessions outlive navigations, so a `param_v=heavy` set on one page
+       * follows the visitor to the next and mislabels everything after it.
+       * Parameters belong to the page, which is replaced on every route change.
+       */
       $faro?.api?.setSession({
         ...$faro?.api?.getSession?.(),
         attributes: {
           ...$faro?.api?.getSession?.()?.attributes,
-          ...attributes,
+          scenario: scenario.id,
+          metric: scenario.metric,
         },
       })
     })

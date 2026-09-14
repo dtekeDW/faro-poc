@@ -154,8 +154,16 @@ wrong.
 
 ## What it takes to actually fail each metric
 
-Provoking a bad score turned out to be harder than expected in two cases, and
-both failures are worth showing.
+Provoking a bad score turned out to be harder than expected, and every failure
+was silent — a green number, never an error. Verified end to end in Grafana:
+
+| Page | Measured |
+| --- | --- |
+| `/lcp?v=good` · `v=heavy` | 240ms · 320ms — good |
+| `/lcp?v=slow` | **3036ms** — needs improvement |
+| `/lcp?v=lazy` | **4100ms** — poor |
+| `/inp?level=instant` → `severe` | 40 · 144 · 376 · **832ms** |
+| `/cls?level=storm` · `severe` | **0.409** · **0.500** |
 
 **LCP is not about file size.** The first version served a 2400px original and
 still scored green: a large image arrives from a nearby server in milliseconds.

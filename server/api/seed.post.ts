@@ -29,15 +29,31 @@ export default defineEventHandler(async (event) => {
    * which is what makes a run findable during a demo — `run=inp-po-demo` beats
    * scanning a list of timestamps for the one you just started.
    */
+  // Transliterated first: stripping accents outright turns "Käsekuchen" into
+  // "k-sekuchen", which is neither the name typed nor a usable label.
   const slug = String(body.name ?? '')
     .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
     .slice(0, 32)
 
-  const time = new Date().toTimeString().slice(0, 5).replace(':', '')
-  const suffix = slug || `${new Date().toISOString().slice(0, 10)}-${time}-${Date.now().toString(36).slice(-4)}`
-  const runId = `${target}-${suffix}`
+  /*
+   * The stamp is always appended, name or not. A run called `kaesekuchen` is
+   * findable today and ambiguous next week, when there are three of them —
+   * knowing roughly when a measurement was taken is part of being able to
+   * trust it.
+   */
+  const now = new Date()
+  const pad = (value: number) => String(value).padStart(2, '0')
+  const stamp = `${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`
+
+  const runId = slug ? `${target}-${slug}-${stamp}` : `${target}-${stamp}`
 
   const child = spawn('pnpm', ['exec', 'tsx', 'scripts/seed.ts'], {
     cwd: process.cwd(),
