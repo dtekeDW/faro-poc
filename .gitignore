@@ -3,3 +3,6 @@
 node_modules
 .env
 dist
+
+# Hero film: hosted elsewhere, far too large for the repository
+public/media/*.mp4

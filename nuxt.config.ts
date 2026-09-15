@@ -39,6 +39,15 @@ export default defineNuxtConfig({
         // Linked from the lab so the run and the result sit one click apart.
         dashboardUrl: '',
       },
+
+      /**
+       * Where the hero film is served from. Empty means no film: the hero
+       * shows its still and nothing is requested. The file lives on a CDN
+       * rather than in this repository — twelve megabytes of video has no
+       * business in git, and a hero video is exactly the kind of asset that
+       * belongs on an origin built to range-serve it.
+       */
+      showreelUrl: '',
     },
   },
 

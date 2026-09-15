@@ -43,10 +43,12 @@ function imagesFor(seed: string) {
 /** Exactly the configuration from the MotionView studio export. */
 function configFor(key: keyof typeof reels) {
   const reel = reels[key]
+  const images = imagesFor(reel.seed)
 
   return {
     familyKey: 'orbit',
-    imageCount: 5,
+    // Follows the reel rather than a fixed five, so a set of six orbits six.
+    imageCount: images.length,
     aspectId: '16:9',
     loopSec: 16,
     params: {
@@ -69,7 +71,7 @@ function configFor(key: keyof typeof reels) {
     focusReach: 0.6,
     focusSoft: 2.2,
     easePts: [0.6, 0, 0.4, 1],
-    images: imagesFor(reel.seed),
+    images,
     texts: [
       {
         content: reel.place,
