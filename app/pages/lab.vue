@@ -23,7 +23,16 @@ const target = ref('worst')
 const passes = ref(3)
 const name = ref('')
 
+/*
+ * Off by default: an invisible browser is faster and does not take the screen
+ * away from whatever is being shown. Turned on, the run becomes the thing to
+ * look at — which is the only way an audience sees that these numbers come
+ * from real page loads rather than from a fixture.
+ */
+const isHeaded = ref(false)
+
 const runId = ref<string | null>(null)
+const isRunHeaded = ref(false)
 const job = ref<SeedJob | null>(null)
 const isStarting = ref(false)
 const error = ref<string | null>(null)
@@ -43,10 +52,11 @@ async function start() {
   try {
     const started = await $fetch<{ runId: string }>('/api/seed', {
       method: 'POST',
-      body: { passes: passes.value, target: target.value, name: name.value },
+      body: { passes: passes.value, target: target.value, name: name.value, headed: isHeaded.value },
     })
 
     runId.value = started.runId
+    isRunHeaded.value = isHeaded.value
     watchJob(started.runId)
   }
   catch (cause) {
@@ -109,12 +119,19 @@ const steps = computed(() => {
 
     const tail = rest.slice(boundary).trim()
     const failed = tail.endsWith('failed') || tail.includes('failed:')
-    const label = tail
+
+    // `label | /path  status`. The URL is what a viewer sees in the window
+    // during a visible run, so the row can be matched to it.
+    const separator = tail.indexOf('|')
+    const strip = (value: string) => value
       .replace(/\s+ok$/, '')
       .replace(/\s+failed.*$/, '')
       .trim()
 
-    rows.push({ pass, label, failed })
+    const label = strip(separator < 0 ? tail : tail.slice(0, separator))
+    const path = separator < 0 ? '' : strip(tail.slice(separator + 1))
+
+    rows.push({ pass, label, path, failed })
   }
 
   return rows.reverse()
@@ -185,6 +202,23 @@ const failures = computed(() => steps.value.filter(step => step.failed).length)
           >
         </label>
 
+        <label
+          class="pill flex select-none items-center gap-2.5 focus-within:border-dodger"
+          :data-active="isHeaded"
+        >
+          <input
+            v-model="isHeaded"
+            type="checkbox"
+            class="sr-only"
+            :disabled="job?.isRunning"
+          >
+          <span
+            class="size-1.5 rounded-full transition-colors"
+            :class="isHeaded ? 'bg-ink' : 'bg-chalk/40'"
+          />
+          Watch the browser
+        </label>
+
         <button
           type="button"
           class="pill px-8"
@@ -194,6 +228,17 @@ const failures = computed(() => steps.value.filter(step => step.failed).length)
           {{ job?.isRunning ? 'Running…' : 'Start run' }}
         </button>
       </div>
+
+      <p class="max-w-[52ch] text-sm text-mute">
+        <template v-if="isHeaded">
+          A Chromium window opens and walks the pages itself — one load per row
+          below. Slower, but the room sees where the measurements come from.
+        </template>
+        <template v-else>
+          The run happens in a browser you never see. Switch it on to show the
+          loads happening.
+        </template>
+      </p>
 
       <p v-if="error" class="text-sm text-[#ff6b5e]">
         {{ error }}
@@ -207,6 +252,7 @@ const failures = computed(() => steps.value.filter(step => step.failed).length)
           run={{ runId }}
         </p>
         <p class="type-data text-sm text-mute">
+          <span v-if="isRunHeaded" class="mr-4 text-chalk">visible browser</span>
           {{ steps.length }}<template v-if="expected">
             / {{ expected }}
           </template>
@@ -231,7 +277,10 @@ const failures = computed(() => steps.value.filter(step => step.failed).length)
           :key="`${step.pass}-${step.label}-${index}`"
           class="flex items-baseline justify-between gap-6 border-b border-chalk/10 py-3"
         >
-          <span class="text-sm">{{ step.label }}</span>
+          <span class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <span class="text-sm">{{ step.label }}</span>
+            <span v-if="step.path" class="type-data text-xs text-mute">{{ step.path }}</span>
+          </span>
           <span class="flex items-baseline gap-5">
             <span class="type-data text-xs text-mute">pass {{ step.pass }}</span>
             <span class="type-data text-xs" :class="step.failed ? 'text-[#ff6b5e]' : 'text-dodger'">
@@ -242,7 +291,7 @@ const failures = computed(() => steps.value.filter(step => step.failed).length)
       </ol>
 
       <p v-else class="mt-8 text-sm text-mute">
-        Starting the browser…
+        {{ isRunHeaded ? 'Opening the browser window…' : 'Starting the browser…' }}
       </p>
 
       <p v-if="job && !job.isRunning" class="type-body mt-8 text-sm text-mute">

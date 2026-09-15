@@ -29,6 +29,14 @@ const PASSES = Number(process.env.SEED_PASSES ?? 12)
 const TARGET = process.env.SEED_TARGET ?? 'all'
 const RUN_ID = process.env.SEED_RUN_ID ?? buildRunId(TARGET)
 
+/**
+ * Demo mode: the browser opens a real window and walks the pages in front of
+ * the room. It measures the same as the invisible run — it is only slower to
+ * watch, which is the point when the audience should see where the numbers in
+ * the dashboard come from.
+ */
+const IS_HEADED = /^(?:1|true|yes)$/i.test(process.env.SEED_HEADED ?? '')
+
 function buildRunId(prefix: string) {
   const now = new Date()
   const pad = (value: number) => String(value).padStart(2, '0')
@@ -154,10 +162,12 @@ async function runStep(browser: Browser, step: Step, pass: number) {
     })
     await page.waitForTimeout(2000)
 
-    console.warn(`pass ${pass}  ${step.label.padEnd(16)} ok`)
+    // The path travels with the label so the lab can show which URL produced
+    // the row — during a visible run it is the address bar on screen.
+    console.warn(`pass ${pass}  ${step.label.padEnd(16)} | ${step.path}  ok`)
   }
   catch (error) {
-    console.error(`pass ${pass}  ${step.label.padEnd(16)} failed: ${(error as Error).message}`)
+    console.error(`pass ${pass}  ${step.label.padEnd(16)} | ${step.path}  failed: ${(error as Error).message}`)
   }
   finally {
     await context.close()
@@ -198,6 +208,7 @@ async function main() {
 
   console.warn(`Seeding ${BASE_URL} — target ${TARGET}, ${PASSES} passes over ${selected.length} steps`)
   console.warn(`Run id: ${RUN_ID}`)
+  console.warn(`Browser: ${IS_HEADED ? 'visible' : 'headless'}`)
 
   /*
    * The full Chromium in new headless mode, not Playwright's default headless
@@ -206,7 +217,24 @@ async function main() {
    * every LCP scenario came back with no measurement at all while TTFB, FCP,
    * CLS and INP arrived normally.
    */
-  const browser = await chromium.launch({ headless: true, channel: 'chromium' })
+  const browser = await chromium.launch({
+    headless: !IS_HEADED,
+    channel: 'chromium',
+    args: IS_HEADED
+      ? [
+          /*
+           * A visible window that the desktop considers covered — by the tab
+           * the demo is being given from, for instance — is reported to the
+           * page as hidden, and web-vitals drops LCP for a page hidden before
+           * its largest paint. Without these, watching the run would measure
+           * less than not watching it.
+           */
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-features=CalculateNativeWinOcclusion',
+        ]
+      : [],
+  })
 
   for (let pass = 1; pass <= PASSES; pass++) {
     for (const step of selected)

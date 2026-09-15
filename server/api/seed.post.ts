@@ -15,7 +15,7 @@ import process from 'node:process'
  * anything deployed.
  */
 export default defineEventHandler(async (event) => {
-  interface SeedRequest { passes?: number, target?: string, name?: string }
+  interface SeedRequest { passes?: number, target?: string, name?: string, headed?: boolean }
 
   const body: SeedRequest = await readBody<SeedRequest>(event).catch(() => ({}))
   const passes = Math.min(Math.max(Number(body.passes) || 3, 1), 30)
@@ -62,6 +62,8 @@ export default defineEventHandler(async (event) => {
       SEED_PASSES: String(passes),
       SEED_RUN_ID: runId,
       SEED_TARGET: target,
+      // Demo mode: the run happens in a window the room can watch.
+      SEED_HEADED: body.headed ? '1' : '',
     },
     detached: false,
   })
@@ -73,5 +75,5 @@ export default defineEventHandler(async (event) => {
   child.stderr?.on('data', (chunk: Buffer) => job.append(runId, chunk.toString()))
   child.on('close', code => job.finish(runId, code ?? 0))
 
-  return { runId, passes, target }
+  return { runId, passes, target, headed: Boolean(body.headed) }
 })
