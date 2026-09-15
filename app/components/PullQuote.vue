@@ -10,10 +10,13 @@
         <FocusBlurResolve text="They said it better" trigger-on-view />
       </blockquote>
 
-      <p class="mx-auto mt-16 max-w-[38ch] text-xl leading-[1.5] text-mute md:text-2xl">
-        “They shot for four days and came back with a film we are still running
-        two years later. Nobody on our side had to explain the brand twice.”
-      </p>
+      <!-- The one paragraph on the page that asks to be read rather than
+           scanned, so it is the one that rewards reading: the words light as
+           the quote travels up the viewport. -->
+      <ScrollRevealParagraph
+        class="mx-auto mt-16 max-w-[38ch] text-xl leading-[1.5] md:text-2xl"
+        text="“They shot for four days and came back with a film we are still running two years later. Nobody on our side had to explain the brand twice.”"
+      />
 
       <figcaption class="mt-14 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
         <span class="text-chalk">Marta Ellis</span>

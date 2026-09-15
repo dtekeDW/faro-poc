@@ -163,17 +163,19 @@ watchEffect(() => {
           </LineByLineSlide>
         </p>
 
-        <a
-          href="#works"
-          class="hero-cta group inline-flex items-center gap-3 text-sm font-medium text-chalk"
-        >
-          <span class="link-wipe"><PerCharacterRise text="Play showreel" :delay="2050" /></span>
-          <span class="grid size-10 place-items-center rounded-full border border-chalk/25 transition-colors duration-300 group-hover:border-dodger group-hover:bg-dodger group-hover:text-ink">
-            <svg viewBox="0 0 24 24" class="size-3.5" aria-hidden="true">
-              <path d="M8 5v14l11-7z" fill="currentColor" />
-            </svg>
-          </span>
-        </a>
+        <MagneticButton class="hero-cta">
+          <a
+            href="#works"
+            class="group inline-flex items-center gap-3 text-sm font-medium text-chalk"
+          >
+            <span class="link-wipe"><PerCharacterRise text="Play showreel" :delay="2050" /></span>
+            <span class="grid size-10 place-items-center rounded-full border border-chalk/25 transition-colors duration-300 group-hover:border-dodger group-hover:bg-dodger group-hover:text-ink">
+              <svg viewBox="0 0 24 24" class="size-3.5" aria-hidden="true">
+                <path d="M8 5v14l11-7z" fill="currentColor" />
+              </svg>
+            </span>
+          </a>
+        </MagneticButton>
       </div>
     </div>
   </section>

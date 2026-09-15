@@ -71,37 +71,57 @@ long settle. Its mirror `--ease-in-expo` is used only for exits.
 | `--duration-settle` | 600ms | Ground inversion, underline wipes |
 | `--duration-stage`  | 900ms | The menu panel reveal             |
 
-Two text entrances, both ports of smoothui components with their values
-carried over unchanged:
+Every motion component is a port of a smoothui original with its values carried
+over unchanged. The runtime is not: the originals drive `motion/react`, these
+run on CSS and the platform's own APIs, so the page ships no animation library
+and the text still arrives when scripting fails.
 
-- **`FocusBlurResolve`** — `blur(14px)`, `opacity 0`, `translateY(14px)`,
-  `scale(1.01)` resolving on `cubic-bezier(0.22, 1, 0.36, 1)`. The original
-  ships 760ms; the hero passes **1450ms** because a line set at 9.5rem resolves
-  across far more area and the stock duration reads hurried at that size. Used
-  on two lines only: the hero and the pull quote.
-- **`PerCharacterRise`** — letters from `opacity 0` and `y 32` on
-  `cubic-bezier(0.2, 0.8, 0.2, 1)`, 0.7s, 24ms stagger. Its own documentation
-  says _best on 40px+ headlines_, so it carries the section headings and one
-  short label, never body copy. Characters are grouped per word so a line break
-  cannot fall inside a word — the original allows that, and the headings here
-  run to three lines.
+Each one owns exactly one place. A page where every section enters the same way
+has no entrance at all.
+
+| Component                | Values                                                                                   | Where                          |
+| ------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------ |
+| `SoftBlurIn`             | `blur(12px)`, `opacity 0`, `y 16` · 0.9s · `cubic-bezier(0.22, 1, 0.36, 1)` · 25ms/char   | The hero headline              |
+| `LineByLineSlide`        | `opacity 0`, `x -48` · 0.9s · same curve · 120ms/line                                     | The hero lede                  |
+| `PerCharacterRise`       | `opacity 0`, `y 32` · 0.7s · `cubic-bezier(0.2, 0.8, 0.2, 1)` · 24ms/char                 | Section headings, short labels |
+| `FocusBlurResolve`       | `blur(14px)`, `opacity 0`, `y 14`, `scale(1.01)` · same curve                             | The pull-quote heading         |
+| `ScrollRevealParagraph`  | Per-word opacity between the viewport offsets `0.9` and `0.25`                            | The pull-quote paragraph       |
+| `MagneticButton`         | `strength 0.3`, `radius 150`, 0.4s settle                                                 | The hero's call to action      |
+| `CursorFollow`           | 16px dot, 40px labelled bubble                                                            | The gallery canvas             |
+
+Three corrections the originals need here, each for a reason the site created:
+
+- **Characters are grouped per word.** `SoftBlurIn` and `PerCharacterRise` both
+  emit every character as its own `inline-block`, which lets a line break fall
+  inside a word. The hero runs to two lines and the section headings to three.
+  The stagger counts through unchanged.
+- **`LineByLineSlide` takes a slot as well as a string.** The lede carries two
+  numbers set in `type-data`; a plain string cannot hold them.
+- **`ScrollRevealParagraph` exposes one copy of its text.** The original renders
+  every word twice — dim underneath, lit above — and reads both to assistive
+  technology.
+
+`MagneticButton` and `CursorFollow` do nothing without `(hover: hover) and
+(pointer: fine)`. A magnet with no cursor to attract only swallows taps, and
+hiding a pointer that does not exist hides nothing.
 
 ### The hero sequence
 
-One choreographed entrance, not four independent ones. Each delay begins where
+One choreographed entrance, not five independent ones. Each delay begins where
 the previous move has visibly settled:
 
-| At     | What                                         |
-| ------ | -------------------------------------------- |
-| 140ms  | Headline resolves from blur, over 1450ms     |
-| 1150ms | Rule draws itself left to right, over 1100ms |
-| 1500ms | Lede resolves from `blur(6px)`, over 1200ms  |
-| 1950ms | Call to action drifts up, over 800ms         |
-| 2050ms | “Play showreel” rises per character          |
+| At     | What                                                    |
+| ------ | ------------------------------------------------------- |
+| 140ms  | Headline resolves from blur, 25ms per character         |
+| 1250ms | Rule draws itself left to right, over 1100ms            |
+| 1500ms | Lede slides in from the left, one line every 120ms      |
+| 1950ms | Call to action drifts up, over 800ms                    |
+| 2050ms | “Play showreel” rises per character                     |
 
-The lede resolves rather than merely fading — a quieter member of the headline's
-family, so the two read as one idea at two volumes. It and the call to action
-arrive separately; as a single block both felt incidental.
+The lede arrives line by line rather than as a block — separately from the call
+to action, which as one unit made both feel incidental. The film behind all of
+it is deliberately absent from this table: it attaches only once the page has
+loaded and gone idle, because the still it covers is the LCP element.
 
 The menu is the other authored moment: the panel clips down while the ground
 inverts underneath it, as one gesture rather than two effects. Everything else

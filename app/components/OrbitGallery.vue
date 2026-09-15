@@ -34,6 +34,13 @@ let instance: MotionViewInstance | null = null
 // browser decodes roughly seven times the pixels it will ever show.
 const edge = computed(() => (isDegraded ? 2400 : 960))
 
+/**
+ * What the cursor says. The canvas already spells out the place and the month,
+ * so repeating either would be decoration; the count is the one thing a
+ * viewer cannot read off the frames while they orbit.
+ */
+const frameCount = computed(() => (REEL_IMAGES[reels[activeFormat.value].seed] ?? []).length)
+
 function imagesFor(seed: string) {
   return (REEL_IMAGES[seed] ?? []).map(
     id => photo(id, edge.value, Math.round(edge.value * 9 / 16)),
@@ -165,10 +172,13 @@ onBeforeUnmount(() => instance?.destroy())
 
     <!-- Full bleed: with the canvas ground matched to the page, any width cap
          would read as a framed box rather than as frames floating on the page. -->
-    <canvas
-      ref="canvas"
-      data-testid="orbit"
-      class="photo mt-14 block w-full"
-    />
+    <CursorFollow class="mt-14 block">
+      <canvas
+        ref="canvas"
+        data-testid="orbit"
+        :data-cursor-text="`${frameCount} stills`"
+        class="photo block w-full"
+      />
+    </CursorFollow>
   </section>
 </template>
