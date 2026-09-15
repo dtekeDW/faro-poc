@@ -79,15 +79,15 @@ and the text still arrives when scripting fails.
 Each one owns exactly one place. A page where every section enters the same way
 has no entrance at all.
 
-| Component                | Values                                                                                   | Where                          |
-| ------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------ |
-| `SoftBlurIn`             | `blur(12px)`, `opacity 0`, `y 16` · 0.9s · `cubic-bezier(0.22, 1, 0.36, 1)` · 25ms/char   | The hero headline              |
-| `LineByLineSlide`        | `opacity 0`, `x -48` · 0.9s · same curve · 120ms/line                                     | The hero lede                  |
-| `PerCharacterRise`       | `opacity 0`, `y 32` · 0.7s · `cubic-bezier(0.2, 0.8, 0.2, 1)` · 24ms/char                 | Section headings, short labels |
-| `FocusBlurResolve`       | `blur(14px)`, `opacity 0`, `y 14`, `scale(1.01)` · same curve                             | The pull-quote heading         |
-| `ScrollRevealParagraph`  | Per-word opacity between the viewport offsets `0.9` and `0.25`                            | The pull-quote paragraph       |
-| `MagneticButton`         | `strength 0.3`, `radius 150`, 0.4s settle                                                 | The hero's call to action      |
-| `CursorFollow`           | 16px dot, 40px labelled bubble                                                            | The gallery canvas             |
+| Component               | Values                                                                                  | Where                          |
+| ----------------------- | --------------------------------------------------------------------------------------- | ------------------------------ |
+| `SoftBlurIn`            | `blur(12px)`, `opacity 0`, `y 16` · 0.9s · `cubic-bezier(0.22, 1, 0.36, 1)` · 25ms/char | The hero headline              |
+| `LineByLineSlide`       | `opacity 0`, `x -48` · 0.9s · same curve · 120ms/line                                   | The hero lede                  |
+| `PerCharacterRise`      | `opacity 0`, `y 32` · 0.7s · `cubic-bezier(0.2, 0.8, 0.2, 1)` · 24ms/char               | Section headings, short labels |
+| `FocusBlurResolve`      | `blur(14px)`, `opacity 0`, `y 14`, `scale(1.01)` · same curve                           | The pull-quote heading         |
+| `ScrollRevealParagraph` | Per-word opacity between the viewport offsets `0.9` and `0.25`                          | The pull-quote paragraph       |
+| `MagneticButton`        | `strength 0.3`, `radius 150`, 0.4s settle                                               | The hero's call to action      |
+| `CursorFollow`          | 16px dot, 40px labelled bubble                                                          | The gallery canvas             |
 
 Three corrections the originals need here, each for a reason the site created:
 
@@ -110,13 +110,13 @@ hiding a pointer that does not exist hides nothing.
 One choreographed entrance, not five independent ones. Each delay begins where
 the previous move has visibly settled:
 
-| At     | What                                                    |
-| ------ | ------------------------------------------------------- |
-| 140ms  | Headline resolves from blur, 25ms per character         |
-| 1250ms | Rule draws itself left to right, over 1100ms            |
-| 1500ms | Lede slides in from the left, one line every 120ms      |
-| 1950ms | Call to action drifts up, over 800ms                    |
-| 2050ms | “Play showreel” rises per character                     |
+| At     | What                                               |
+| ------ | -------------------------------------------------- |
+| 140ms  | Headline resolves from blur, 25ms per character    |
+| 1250ms | Rule draws itself left to right, over 1100ms       |
+| 1500ms | Lede slides in from the left, one line every 120ms |
+| 1950ms | Call to action drifts up, over 800ms               |
+| 2050ms | “Play showreel” rises per character                |
 
 The lede arrives line by line rather than as a block — separately from the call
 to action, which as one unit made both feel incidental. The film behind all of
