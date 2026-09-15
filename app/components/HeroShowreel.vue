@@ -4,9 +4,9 @@ import { useIntersectionObserver } from '@vueuse/core'
 const { isDegraded } = defineProps<{ isDegraded: boolean }>()
 
 /**
- * The film is served from wherever NUXT_PUBLIC_SHOWREEL_URL points — a CDN,
- * not this repository. No URL, no film: the hero keeps its still and requests
- * nothing, which is also what every scenario page wants.
+ * The film is served from wherever NUXT_PUBLIC_SHOWREEL_URL points — a release
+ * asset on GitHub's CDN, not a tracked file. No URL, no film: the hero keeps
+ * its still and requests nothing at all.
  */
 const FILM = useRuntimeConfig().public.showreelUrl
 
