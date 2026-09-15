@@ -41,12 +41,15 @@ export default defineNuxtConfig({
       },
 
       /**
-       * Where the hero film is served from. The file is a release asset
-       * rather than a tracked file: video belongs on an origin built to
-       * range-serve it, not in a git history that every clone has to carry.
-       * Blank leaves the hero on its still and requests nothing.
+       * Where the hero film is served from: the copy that ships in public/,
+       * so it arrives as `video/mp4` from the same origin as the page. A
+       * release asset was tried and works in Chrome, but GitHub serves it as
+       * `application/octet-stream` behind a redirect to a signed URL on
+       * another host — a wrong media type and two extra round trips to save
+       * 2.9 MB. Point this at a CDN if the film ever outgrows the repository;
+       * blank leaves the hero on its still and requests nothing.
        */
-      showreelUrl: '',
+      showreelUrl: '/media/showreel.mp4',
     },
   },
 

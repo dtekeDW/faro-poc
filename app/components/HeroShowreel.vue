@@ -4,8 +4,8 @@ import { useIntersectionObserver } from '@vueuse/core'
 const { isDegraded } = defineProps<{ isDegraded: boolean }>()
 
 /**
- * The film is served from wherever NUXT_PUBLIC_SHOWREEL_URL points — a release
- * asset on GitHub's CDN, not a tracked file. No URL, no film: the hero keeps
+ * The film is served from wherever NUXT_PUBLIC_SHOWREEL_URL points, which by
+ * default is the copy shipped in public/media. No URL, no film: the hero keeps
  * its still and requests nothing at all.
  */
 const FILM = useRuntimeConfig().public.showreelUrl
@@ -149,21 +149,18 @@ watchEffect(() => {
     -->
     <div class="relative px-6 pb-14 md:px-10 md:pb-20">
       <h1 class="max-w-[16ch] type-hero">
-        <FocusBlurResolve
-          text="We make videos people remember"
-          :delay="140"
-          :duration="1450"
-        />
+        <SoftBlurIn text="We make videos people remember" :delay="140" />
       </h1>
 
       <div class="hero-rule mt-16 h-px origin-left bg-chalk/15 md:mt-20" />
 
       <div class="mt-7 flex flex-wrap items-end justify-between gap-6">
-        <p class="hero-lede type-body max-w-[42ch] text-mute">
-          A production studio working across brand film, documentary and
-          commercial. Rated
-          <span class="type-data text-chalk">4.9</span> from
-          <span class="type-data text-chalk">480</span> verified reviews.
+        <p class="type-body max-w-[42ch] text-mute">
+          <LineByLineSlide :delay="1500">
+            <span>A production studio working across brand film,</span>
+            <span>documentary and commercial. Rated <span class="type-data text-chalk">4.9</span> from</span>
+            <span><span class="type-data text-chalk">480</span> verified reviews.</span>
+          </LineByLineSlide>
         </p>
 
         <a
@@ -188,18 +185,10 @@ watchEffect(() => {
   animation: hero-cta 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Starts once the headline has largely resolved (140 + 1450 ≈ 1600). */
+/* Starts once the headline is largely resolved (140 + 29 chars × 25 ≈ 865,
+   plus the 900ms each character takes to arrive). */
 .hero-rule {
-  animation: hero-rule 1100ms cubic-bezier(0.22, 1, 0.36, 1) 1150ms both;
-}
-
-/*
- * The lede resolves rather than merely fading: a quieter member of the same
- * family as the headline, so the two read as one idea at two volumes. Arriving
- * as one block with the call to action made both feel incidental.
- */
-.hero-lede {
-  animation: hero-lede 1200ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
+  animation: hero-rule 1100ms cubic-bezier(0.22, 1, 0.36, 1) 1250ms both;
 }
 
 /* Last in, once the line it sits on has settled. */
@@ -213,20 +202,6 @@ watchEffect(() => {
   }
   to {
     transform: scaleX(1);
-  }
-}
-
-@keyframes hero-lede {
-  from {
-    filter: blur(6px);
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    filter: blur(0);
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -244,7 +219,6 @@ watchEffect(() => {
 @media (prefers-reduced-motion: reduce) {
   .film-toggle,
   .hero-rule,
-  .hero-lede,
   .hero-cta {
     animation: none;
   }

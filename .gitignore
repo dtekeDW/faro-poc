@@ -3,6 +3,3 @@
 node_modules
 .env
 dist
-
-# Hero film: uploaded as a release asset, served from GitHub
-public/media/*.mp4
